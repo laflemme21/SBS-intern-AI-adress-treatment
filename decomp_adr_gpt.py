@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import os
+import time  # Ajout pour mesurer le temps
 
 # Remplacez 'votre_clé_api' par votre clé API OpenAI
 api_key = '################################ '
@@ -12,14 +13,14 @@ headers = {
 }
 
 # Lire le fichier Excel sans ligne d'en-tête
-file_path = 'Adresses_fsb_01.xlsx'
+file_path = 'Adresses_test.xlsx'
 temp_file_path = 'temp_test_adresses.xlsx'
 df = pd.read_excel(file_path, engine='openpyxl', header=None)
 
 # Fonction pour envoyer une requête à l'API OpenAI
-def decompose_address(address):
+def decompose_address(address,model):
     data = {
-        'model': 'gpt-3.5-turbo',
+        'model': model,  # Utiliser le modèle spécifié
         'messages': [
             {
                 'role': 'user',
@@ -81,11 +82,23 @@ def post_process_response(content):
 
     return fields[0].strip(), fields[1].strip(), fields[2].strip(), confidence_score
 
-# Traiter toutes les lignes de l'Excel
-for index, row in df.iterrows():
+start_time = time.time()  # Démarrer le chronomètre
+
+model_used = 'gpt-3.5-turbo'  # Modèle par défaut
+
+# Traiter seulement les n premières lignes de l'Excel
+n_rows=10
+error_occurred = False
+
+for index, row in df.head(n_rows).iterrows():
     if pd.notna(row.iloc[11]):  # Vérifier si la colonne L (index 11) est renseignée
         address = row.iloc[11]
-        numero_voie, immeuble_residence, mention_speciale, confidence_score = decompose_address(address)
+        try:
+            numero_voie, immeuble_residence, mention_speciale, confidence_score = decompose_address(address, model_used)
+        except Exception as e:
+            error_occurred = True
+            print(f"Erreur lors du traitement de la ligne {index}: {e}")
+            numero_voie, immeuble_residence, mention_speciale, confidence_score = "N/A", "N/A", "N/A", 0.0
 
         # Mettre à jour les colonnes M, N, O et P (nouvelle colonne pour l'indice)
         df.at[index, 12] = numero_voie
@@ -99,4 +112,14 @@ df.to_excel(temp_file_path, index=False, header=False, engine='openpyxl')
 # Remplacer le fichier original par le fichier temporaire
 os.replace(temp_file_path, file_path)
 
-print("Traitement terminé et fichier Excel mis à jour.")
+end_time = time.time()  # Arrêter le chronomètre
+elapsed_time = end_time - start_time
+
+print(f"Traitement terminé et fichier Excel mis à jour pour les {n_rows} premières lignes.")
+print(f"Temps d'exécution : {elapsed_time:.2f} secondes.")
+
+# Écrire dans le log uniquement si aucune erreur n'est survenue
+if not error_occurred:
+    log_file = "prompt_1_execution_log.txt"
+    with open(log_file, "a", encoding="utf-8") as f:
+        f.write(f"Rows processed: {n_rows}, Model: {model_used}, Time: {elapsed_time:.2f} seconds\n")
