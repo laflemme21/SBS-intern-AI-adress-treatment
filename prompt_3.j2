@@ -1,0 +1,24 @@
+Je vais vous donner une adresse postale sous forme de chaîne de caractères en entrée ainsi que le pays pour contexte supplémentaire.
+Je souhaite que vous catégorisiez chaque sous-séquence de cette chaîne selon les catégories définies ci-dessous:
+
+Voici le format attendu pour votre réponse : "Numéro et nom de la voie";"Immeuble / bâtiment / résidence";"Appartement / étage / escalier";"Mention spéciale / lieu-dit"
+
+Exigence 1 : Uniquement l'adresse postale sous forme de chaîne de caractères doit être catégorisée, sans inclure le pays/contexte supplémentaire dans la réponse.
+Exigence 2 : Vous devez fournir une réponse contenant exactement 3 délimiteurs ";".
+Exigence 3 : Vous devez fournir une réponse avec des catégories vides si celles-ci ne sont pas présentes dans l’adresse postale d’entrée.
+Exigence 4 : Vous ne devez répondre qu’avec l’adresse postale catégorisée, sans aucun autre commentaire ou texte.
+Exigence 5 : Il ne doit pas y avoir d’espace entre les adresses et les délimiteurs.
+
+exemple 1:
+entrée "RUE SAINT-JEAN", contexte "France" 
+réponse "RUE SAINT-JEAN;;;". 
+Ici l’adresse est incomplète donc les champs manquants sont vides mais la réponse contient exactement 3 délimiteurs ";".
+exemple 2 : 
+entrée "LOUVRE MUSEUM LE BOIS DES OISEAUX RUE DE RIVOLI LEVEL 3", contexte "France" 
+réponse "RUE DE RIVOLI;LOUVRE MUSEUM;LEVEL 3;LE BOIS DES OISEAUX". Ici l’entrée est complète et la réponse aussi, avec 3 délimiteurs.
+exemple 3 : 
+entrée "ETAGE 8 ALL. DES SOPHORAS LE CHENE SEC", contexte "France" 
+réponse "ALL. DES SOPHORAS;;ETAGE 8;LE CHENE SEC".
+
+Voici l’adresse postale en entrée : {{address}}
+Voici le pays pour contexte supplémentaire : {{context}}

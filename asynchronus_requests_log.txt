@@ -1,0 +1,109 @@
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 5.04 seconds (only the api requets)
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 3.70 seconds
+Processed Results: [('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0), ('N/A', 'N/A', 'N/A', 0.0)]
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.00 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.85), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.85), ('26 PLACE DE LA GARE', '', '0.85', 0.0), ("52 ROUTE D'ESCH", '', '', 0.85), ('100 NORTH TRYON STREET', '', '0.85', 0.0), ('119 COOLSINGEL', '', '0.85', 0.0), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.85), ('203-205 RUE CARNOT', '', '', 0.95), ('110 Esplanade du Général de Gaulle', 'Tour B La Defense 4', '9eme Etage', 0.85), ('104 RUE DE RICHELIEU', '', '0.85', 0.0)]
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 5.93 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.85), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.85), ('26 PLACE DE LA GARE', '', '0.97', 0.0), ("52 ROUTE D'ESCH", '', '', 0.0), ('100 NORTH TRYON STREET', '', '0.85', 0.0), ('COOLSINGEL 119', '', '', 0.9), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.85), ('203-205 RUE CARNOT', '', '', 0.85), ('110 Esplanade du Général de Gaulle', 'Tour B La Défense 4', '9ème étage', 0.92), ('104 RUE DE RICHELIEU', '', '0.95', 0.0)]
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 7.20 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.9), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.85), ('26 PLACE DE LA GARE', '', '0.85', 0.0), ("52 ROUTE D'ESCH", '', '', 0.8), ('100 NORTH TRYON STREET', '', '0.98', 0.0), ('119 COOLSINGEL', '', '0.85', 0.0), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.9), ('203-205 RUE CARNOT', '', '', 0.85), ('110 Esplanade du Général de Gaulle', 'TOUR B LA DEFENSE 4', '9ème étage', 0.85), ('104 RUE DE RICHELIEU', '', '0.95', 0.0)]
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.44 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.88), ('8 Fenchurch Place', 'LEVEL 3', '', 0.85), ("'26 PLACE DE LA GARE", '', '', 0.0), ("52 ROUTE D'ESCH", '', '', 1.0), ('100 NORTH TRYON STREET', '', '0.90', 0.0), ('119 COOLSINGEL', '', '0.85', 0.0), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.9), ('203-205 RUE CARNOT', '', '', 0.9), ('110 Esplanade du Gal de Gaulle', 'Tour B La Defense 4', '9eme Etage', 0.85), ("'104 RUE DE RICHELIEU", '', '', 0.0)]
+
+
+####### ALL OF THE ABOVE ARE WITHOUT SAVING TO AN EXCEL FILE #######
+
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.37 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.85), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.85), ('26 PLACE DE LA GARE', '', '0.95', 0.0), ("52 ROUTE D'ESCH", '', '', 0.85), ('100 NORTH TRYON STREET', '', '0.85', 0.0), ('COOLSINGEL 119', '', '', 0.85), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.9), ('203-205 RUE CARNOT', '', '0.85', 0.0), ('110 Esplanade du Général de Gaulle', 'Tour B La Défense 4', '9ème étage', 0.9), ('104 RUE DE RICHELIEU', '', '0.85', 0.0)]
+Rows processed: 50, Model: gpt-3.5-turbo, Time: 15.06 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.9), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.85), ('26 PLACE DE LA GARE', '', '0.98', 0.0), ("52 ROUTE D'ESCH", '', '', 0.9), ('100 NORTH TRYON STREET', '', '0.85', 0.0), ('COOLSINGEL 119', '', '.99', 0.0), ("'12 PLACE DES ETATS UNIS", '', 'CS 70050', 0.0), ('203-205 RUE CARNOT', '', '', 0.85), ('110 Esplanade du Gal de Gaulle', 'Tour B La Defense 4', '9eme Etage', 0.9), ('104 RUE DE RICHELIEU', '', '0.85', 0.0), ('17 BOULEVARD HAUSSMANN', '', '0.85', 0.0), ("'1 RUE JEAN MERMOZ", '', 'ZAE SAINT-GUENAULT', 0.0), ('1 PLACE COPERNIC', '', '0.95', 0.0), ('60 LONDON WALL', '', '0.85', 0.0), ('60 LONDON WALL', '', '.98', 0.0), ('60 London Wall', 'PCM Department-CFS Settlements', '3rd Floor-For Att Nicola Quaddy', 0.9), ('60 London Wall', '', 'Mme Lisa Robertson', 0.85), ("'C/O ING PCM A LOCATIECODE AS 04 37", 'POSTBUS 1800', '', 0.0), ('VIA PALEOCAPA 5', '', '0.90', 0.0), ('28 PIAZZA CASTELLO', '', 'I-20121 MILANO', 0.95), ('5 SATAMARADANKATU', '', '0.90', 0.0), ('ALEKSANTERINKATU 30', '', 'SF-0100 HELSINKI 10', 0.85), ('KUNGSTRADGARDSGATAN 8', '', '', 0.85), ('6 RUE PETITOT', '', '0.85', 0.0), ('30 Avenue de Frontenex', 'Case Postale 6405', '', 0.85), ('59 AVENUE ANDRE ROUSSIN', '', '0.95', 0.0), ('41 RUE MARTRE', '', '0.97', 0.0), ("'RUE JULES COCKX 8-10", '', '', 0.0), ('2 PLACE JEAN MILLIER', 'LA DEFENSE 6', '', 0.9), ('22 AVENUE MONTAIGNE', '', '0.85', 0.0), ('3-5 RUE BAYARD', '', '', 0.85), ('112 CHEMIN DU MOULIN CARRON', 'CAMPUS SEB', '', 0.9), ('CHEMIN DU PETIT-BOIS', '', 'BP 172', 0.85), ("'133 AVENUE DES CHAMPS ELYSEES", '', '', 0.0), ('133, AVENUE DES CHAMPS ELYSEES', 'C/O MONSIEUR JEAN-PAUL MORIN', '', 0.94), ('COPIE INTERNE', '', '', 1.0), ('42 AVENUE DE FRIEDLAND', '', '', 0.9), ('46 AVENUE DE LA GRANDE ARMEE', '', '0.95', 0.0), ('20 AVENUE RAYMOND ARON', 'COMPTABILITE BANCAIRE TRI D3/402', '', 0.85), ('35 RUE JOSEPH MONIER', '', '0.85', 0.0), ('1 ESPLANADE DE FRANCE', '', '', 0.95), ('6 AVENUE DU MARAIS', '', '0.85', 0.0), ('6 AVENUE DU MARAIS', '', 'BP 90028', 0.85), ('50 BOULEVARD SEBASTOPOL', '', '0.90', 0.0), ('185 RUE LEON BLUM', '', '0.85', 0.0), ('40 QUAI DE DION BOUTON', '', '', 0.9), ('110 AVENUE DE FRANCE', '', '0.85', 0.0), ('110 Avenue de France', 'IMMEUBLE ODYSSEY', '', 0.92), ('40 RUE DE SÈVRES', '', '0.90', 0.0), ('43 QUAI DE GRENELLE', '', '0.85', 0.0)]
+Rows processed: 100, Model: gpt-3.5-turbo, Time: 36.47 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.9), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.85), ('26 PLACE DE LA GARE', '', '0.98', 0.0), ("52 ROUTE D'ESCH", '', '', 0.85), ('100 NORTH TRYON STREET', '', '0.85', 0.0), ('119 COOLSINGEL', '', '0.85', 0.0), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.9), ('203-205 RUE CARNOT', '', '', 0.85), ('110 Esplanade du Général de Gaulle', 'Tour B La Défense 4', '9ème étage', 0.9), ('104 RUE DE RICHELIEU', '', '0.95', 0.0), ('17 BOULEVARD HAUSSMANN', '', '0.95', 0.0), ('1 RUE JEAN MERMOZ', '', 'ZAE SAINT-GUENAULT', 0.85), ('1 PLACE COPERNIC', '', '', 0.8), ('60 LONDON WALL', '', '', 0.0), ('60 LONDON WALL', '', '0.85', 0.0), ("'60 LONDON WALL", 'PCM DEPARTMENT-CFS SETTLEMENTS', '3RD FLOOR-FOR ATT NICOLA QUADDY', 0.0), ('60 London Wall', 'Mme Lisa Robertson', '', 0.85), ("'C/O ING PCM A LOCATIECODE AS 04 37", 'POSTBUS 1800', '', 0.0), ('VIA PALEOCAPA 5', '', '0.95', 0.0), ("'28 PIAZZA CASTELLO", '', 'I-20121 MILANO', 0.0), ('5 SATAMARADANKATU', '', '0.97', 0.0), ('ALEKSANTERINKATU 30', '', 'SF-0100 HELSINKI 10', 0.9), ('KUNGSTRADGARDSGATAN 8', '', '', 0.85), ('6 RUE PETITOT', '', '', 0.85), ('30 Avenue de Frontenex', 'Case Postale 6405', '', 0.85), ('59 Avenue Andre Roussin', '', '0.95', 0.0), ('41 RUE MARTRE', '', '', 0.85), ('8-10 Rue Jules Cockx', '', '0.98', 0.0), ('2 PLACE JEAN MILLIER', 'LA DEFENSE 6', '', 0.97), ('22 AVENUE MONTAIGNE', '', '0.85', 0.0), ('3-5 RUE BAYARD', '', '', 0.8), ("'112 CHEMIN DU MOULIN CARRON", '', 'CAMPUS SEB', 0.0), ('CHEMIN DU PETIT-BOIS', '', 'BP 172', 0.85), ("'133 AVENUE DES CHAMPS ELYSEES", '', '', 0.0), ("'133, AVENUE DES CHAMPS ELYSEES", 'C/O MONSIEUR JEAN-PAUL MORIN', '', 0.0), ('COPIE INTERNE', '', '', 1.0), ('42 AVENUE DE FRIEDLAND', '', '0.85', 0.0), ('46 AVENUE DE LA GRANDE ARMEE', '', '0.97', 0.0), ('20 AVENUE RAYMOND ARON', 'COMPTABILITE BANCAIRE TRI D3/402', '', 0.85), ('35 RUE JOSEPH MONIER', '', '0.95.', 0.0), ('1 ESPLANADE DE FRANCE', '', '', 1.0), ('6 AVENUE DU MARAIS', '', '0.95', 0.0), ('6 AVENUE DU MARAIS', '', 'BP 90028', 0.85), ('50 BOULEVARD SEBASTOPOL', '', '0.85', 0.0), ('185 RUE LEON BLUM', '', '0.85', 0.0), ('40 QUAI DE DION BOUTON', '', '', 0.0), ('110 AVENUE DE FRANCE', '', '', 0.85), ('110 Avenue de France', 'IMMEUBLE ODYSSEY', '', 0.9), ('40 RUE DE SÈVRES', '', '0.95', 0.0), ('43 QUAI DE GRENELLE', '', '', 0.97), ('2 BOULEVARD HENRI BECQUEREL', 'ESPACE CORMONTAIGNE', '', 0.9), ('ZI RIEDGEN', '', '', 0.85), ('C/O AMPACET EUROPE SA HEADQUARTERS', 'MME MAZZEI', 'Z.I. RIEDGEN', 0.85), ('11 RUE DE TILSITT', '', '0.98', 0.0), ("11 PLACE DE L'EUROPE", '', '0.90', 0.0), ("11 PLACE DE L'EUROPE", '', 'BP 46', 0.9), ('2 RUE DE FOLJUIF', '', '0.85', 0.0), ('35 RUE JOSEPH MONIER', '', '', 0.9), ('15 AVENUE DE LA GRANDE ARMEE', '', '0.95', 0.0), ('19 RUE MICHEL DE COMTE', '', '0.90', 0.0), ('GEREONSHOF', '', '', 0.85), ('31 Rue Jean Giraudoux', 'ATTN. M. CLAUDE BRUN', '', 0.85), ('40, RUE DU COLISEE', 'C/O AXA RE BACK OFFICE INVESTISSEMENTS', '', 0.9), ('10 Boulevard Alexandre Oyon', 'C/O Groupe MMA -D.F. Back Office Financier', 'Balzac B333', 0.85), ('ALLEE DES DAUPHINS', 'DEFENSE MONDIAL ATLANTIDE', 'C/O', 0.9), ('87, RUE DE RICHELIEU', 'C/O A.G.F. IART', 'ATTN. MME C. QUIGNARD', 0.85), ('7 Avenue Marcel Proust', 'GMF ASSURANCES ATTN MME HOUDARD', '', 0.98), ("C/O MUTUELLES REGIONALES D'ASSU", 'LE CROC', 'B.P. 63130', 0.9), ('B.O. FINANCIER BALZAC B 333', 'B.O. FINANCIER BALZAC', '', 0.85), ("'BOITE POSTALE 297", 'C/O LA MUTUELLE DE POITIERS', '', 0.0), ('20 RUE BRUNEL', 'C/O M.A.C.S.F.', '', 0.9), ("'10 COURS DU TRIANGLE DE L'ARCHE", 'C/O LE SOU MEDICAL', 'TSA 40100', 0.0), ('47/49 RUE DE MIROMESNIL', 'C/O C.M.A.P.', '', 0.85), ("8-10 Rue d'Astorg", 'C/O Groupama Dir. Financière Grpe - G.Fleche', '', 0.85), ('C/O AXA IARD MUTUELLE', 'MME RIDOUX', 'TOUR AXA 11 FLEUVE 1', 0.0), ('65 RUE DE MONCEAU', 'C/O MUTUELLE CENTRALE DE REASSUR', '', 0.96), ('100 RUE DE COURCELLES', 'C/O C.G.U. COURTAGE', '', 0.9), ('11 FLEUVE', 'TOUR AXA', 'C/O AXA IARD SA MME RIDOUX', 0.9), ("'LE CROC", 'C/O LA NORMANDIE', 'B.P. 63130', 0.0), ('27 AVENUE C. VELLEFAUX', 'C/O PREDICA', '', 0.9), ("'5/7 RUE DU CENTRE", 'C/O GAN IARD ATTN. M. DIDIER REMOND', '', 0.0), ('5/7 RUE DU CENTRE', 'C/O C.C.A.M.A. RESULTATS FIN. MM REMOND OU ROUX', '', 0.87), ('C/O C.I.A.M.', 'ATTN. A. POLAK', 'PETERSBOURG B.P. 677', 0.85), ('52 RUE DE LA VICTOIRE', 'C/O COMMERCIAL UNION FRANCE', '', 0.9), ('1 CHEMIN DU WACKEN', 'C/O ALSACIENNE', '', 0.85), ('1 RUE DES ARQUEBUSIERS', 'C/O RHIN ET MOSELLE IARD ASSURANCES FRANCAISES', '', 0.85), ('19 AVENUE DE GRAMMONT', 'C/O M.P.F.', '', 0.85), ('C/O AXA CESSIONS MME RIDOUX', 'TOUR AXA 11 FLEUVE', '1 PLACE DES SAISONS', 0.85), ('18 PLACE DES REFLETS', 'TOUR AURORE', 'C/O EAGLE STAR FRANCE', 0.9), ('5 RUE MASSERAN', 'C/O MURACEF', '', 0.9), ('FRATERNELLE B.P. 311', 'C/O', '', 0.85), ('66 Rue de Sotteville', 'C/O Matmut Service Financier Reassurance', '', 0.9), ('141 AVENUE SALVADOR ALLENDE', 'C/O S.M.A.C.L. ATTN. M. CANTIE', '', 0.88), ('4 RUE EDOUARD GAND', 'C/O ASSUR. MUTUELLE DE PICARDIE', '', 0.85), ('1 PLACE DES SAISONS', 'AXA/LE SECOURS TOUR AXA', '11EME FLEUVE', 0.9), ('14 RUE RACINE', 'C/O C.G.A.M.', '', 0.85), ("3 COURS D'ORMESSON", 'C/O C.M.M.A.', '', 0.85), ('19 RUE GUILLAUME TELL', 'C/O ABRI', '', 0.9), ('32 RUE DE MOGADOR', 'C/O EQUITE', '', 0.9), ("'TOUR AXA 11EME FLEUVE 1 PLACE DES SAISONS", 'C/O AXA COURTAGE IARD MUT MME RIDOUX', '', 0.0)]
+
+
+####### ALL OF THE ABOVE ARE WITHOUT NEASURING THE ACCURACY #######
+
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 5.00 seconds
+Processed Results: [('25 BANK STREET', '', 'CANARY WHARF', 0.9), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.9), ('26 PLACE DE LA GARE', '', '0.95', 0.0), ("52 ROUTE D'ESCH", '', '0.95', 0.0), ('100 NORTH TRYON STREET', '', '0.85', 0.0), ('COOLSINGEL 119', '', '0.90', 0.0), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.9), ('203-205 RUE CARNOT', '', '', 0.85), ('110 Esplanade du Général de Gaulle', 'Tour B La Défense 4', '9ème étage', 0.9), ('104 RUE DE RICHELIEU', '', '', 0.85)]
+Percentage of exact matches: 40.00%
+####### slight error in the prompt #######
+
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.53 seconds
+Processed Results: [('25 Bank Street', 'Canary Wharf', '', 0.0), ('8 FENCHURCH PLACE', 'LEVEL 3', '', 0.0), ('26 PLACE DE LA GARE', '', '', 0.95), ("52 ROUTE D'ESCH", '', '', 0.98), ('100 NORTH TRYON STREET', '', '', 0.98), ('119 COOLSINGEL', '', '', 0.9), ('12 PLACE DES ETATS UNIS', '', 'CS 70050', 0.0), ('203-205 RUE CARNOT', '', '', 0.0), ('110 Esplanade du Général de Gaulle', 'Tour B La Défense 4', '9ème étage', 0.0), ('104 RUE DE RICHELIEU', '', '', 0.95)]
+Percentage of exact matches: 50.00%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.99 seconds
+Percentage of exact matches: 47.50%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 5.23 seconds
+Percentage of exact matches: 50.00%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.26 seconds
+Percentage of exact matches: 0.00%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.35 seconds
+Percentage of exact matches: 10.00%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.15 seconds
+Percentage of exact matches: 20.00%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.28 seconds
+Percentage of exact matches: 10.00%
+
+
+####### all of the above had slight errors (propmt_1)#######
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.25 seconds
+Prompt file used: prompt_1.txt
+Percentage of exact matches: 10.00%
+
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.22 seconds
+Prompt file used: prompt_2.txt
+Percentage of exact matches: 10.00%
+
+Rows processed: 10, Model: gpt-4o-mini-2024-07-18, Time: 4.25 seconds
+Prompt file used: prompt_2.txt
+Percentage of exact matches: 60.00%
+
+Rows processed: 10, Model: gpt-4.1-mini-2025-04-14, Time: 4.92 seconds
+Prompt file used: prompt_2.txt
+Percentage of exact matches: 60.00%
+
+Rows processed: 20, Model: gpt-4.1-mini-2025-04-14, Time: 6.91 seconds
+Prompt file used: prompt_2.txt
+Percentage of exact matches: 50.00%
+
+Rows processed: 20, Model: gpt-4.1-mini-2025-04-14, Time: 9.14 seconds
+Prompt file used: prompt_1.txt
+Percentage of exact matches: 35.00%
+
+Rows processed: 20, Model: gpt-4o-mini-2024-07-18, Time: 6.50 seconds
+Prompt file used: prompt_1.txt
+Percentage of exact matches: 35.00%
+
+Rows processed: 20, Model: gpt-4.1-2025-04-14, Time: 7.03 seconds
+Prompt file used: prompt_2.txt
+Percentage of exact matches: 55.00%
+
+Rows processed: 20, Model: gpt-4.1-2025-04-14, Time: 7.10 seconds
+Prompt file used: prompt_2_modified.txt
+Percentage of exact matches: 55.00%
+
+Rows processed: 20, Model: gpt-4.1-2025-04-14, Time: 7.32 seconds
+Prompt file used: prompt_2_modified.txt
+Percentage of exact matches: 60.00%
+
+Rows processed: 20, Model: gpt-4o-mini-search-preview-2025-03-11, Time: 10.43 seconds
+Prompt file used: prompt_2_modified.txt
+Percentage of exact matches: 50.00%
+
+Rows processed: 20, Model: gpt-4o-mini-search-preview-2025-03-11, Time: 9.38 seconds
+Prompt file used: prompt_2_modified.txt
+Percentage of exact matches: 50.00%
+
+Rows processed: 20, Model: gpt-4o-mini-search-preview-2025-03-11, Time: 9.59 seconds
+Prompt file used: prompt_3.j2
+Percentage of exact matches: 55.00%
+

@@ -44,7 +44,6 @@ def decompose_address(address,model):
         'max_tokens': 250,
         'temperature': 0.3
     }
-
     try:
         response = requests.post(api_url, headers=headers, json=data)
         response.raise_for_status()  # Gère les erreurs HTTP
@@ -87,7 +86,7 @@ start_time = time.time()  # Démarrer le chronomètre
 model_used = 'gpt-3.5-turbo'  # Modèle par défaut
 
 # Traiter seulement les n premières lignes de l'Excel
-n_rows=10
+n_rows=50
 error_occurred = False
 
 for index, row in df.head(n_rows).iterrows():
@@ -120,6 +119,33 @@ print(f"Temps d'exécution : {elapsed_time:.2f} secondes.")
 
 # Écrire dans le log uniquement si aucune erreur n'est survenue
 if not error_occurred:
-    log_file = "prompt_1_execution_log.txt"
+    log_file = "decomp_adr_gpt_log.txt"
     with open(log_file, "a", encoding="utf-8") as f:
         f.write(f"Rows processed: {n_rows}, Model: {model_used}, Time: {elapsed_time:.2f} seconds\n")
+
+def compare_and_mark_results(file_predicted, file_correct, n_rows, start_col=12, mark_col=16):
+    """
+    Compare les réponses dans file_predicted avec celles dans file_correct.
+    Ajoute 'V' (vrai) ou 'F' (faux) dans la colonne mark_col pour chaque ligne selon la correspondance.
+    """
+    df_pred = pd.read_excel(file_predicted, engine='openpyxl', header=None)
+    df_corr = pd.read_excel(file_correct, engine='openpyxl', header=None)
+
+    for idx in range(n_rows):
+        is_all_true = True
+        for col in range(start_col, start_col + 4):
+            val_pred = str(df_pred.iloc[idx, col]).strip()
+            val_corr = str(df_corr.iloc[idx, col]).strip()
+            if val_pred != val_corr:
+                is_all_true = False
+                break
+        df_pred.iloc[idx, mark_col] = 'V' if is_all_true else 'F'
+
+    # Sauvegarder le fichier modifié (avec les marques V/F)
+    df_pred.to_excel(file_predicted, index=False, header=False, engine='openpyxl')
+
+# --- Ajoutez ceci à la fin de votre script principal, après la mise à jour du fichier ---
+if __name__ == "__main__":
+    # ...votre code existant...
+    # Après avoir remplacé le fichier original par le fichier temporaire :
+    compare_and_mark_results(file_path, 'Adresses_test_correct.xlsx', n_rows=50, start_col=12, mark_col=16)

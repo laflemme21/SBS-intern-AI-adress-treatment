@@ -3,3 +3,5 @@ Rows processed: 10, Model: gpt-3.5-turbo Time: 9.45 seconds
 Rows processed: 10, Model: gpt-4.1-nano, Time: 14.01 seconds
 Rows processed: 50, Model: gpt-3.5-turbo, Time: 65.67 seconds
 Rows processed: 10, Model: gpt-3.5-turbo, Time: 13.73 seconds
+Rows processed: 10, Model: gpt-3.5-turbo, Time: 6.85 seconds
+Rows processed: 50, Model: gpt-3.5-turbo, Time: 42.69 seconds
