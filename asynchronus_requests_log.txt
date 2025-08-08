@@ -55,6 +55,8 @@ Percentage of exact matches: 10.00%
 
 
 ####### all of the above had slight errors (propmt_1)#######
+
+
 Rows processed: 10, Model: gpt-3.5-turbo, Time: 4.25 seconds
 Prompt file used: prompt_1.txt
 Percentage of exact matches: 10.00%
@@ -106,4 +108,28 @@ Percentage of exact matches: 50.00%
 Rows processed: 20, Model: gpt-4o-mini-search-preview-2025-03-11, Time: 9.59 seconds
 Prompt file used: prompt_3.j2
 Percentage of exact matches: 55.00%
+
+Rows processed: 20, Model: gpt-4o-mini-search-preview-2025-03-11, Time: 41.08 seconds
+Prompt file used: prompt_3.j2
+Percentage of exact matches: 25.00%
+
+Rows processed: 20, Model: o4-mini-2025-04-16, Time: 25.96 seconds
+Prompt file used: prompt_3.j2
+Percentage of exact matches: 65.00%
+
+
+####### The tests above dont check for the confidence of the model #######
+
+
+Rows processed: 2, Model: o4-mini-2025-04-16, Time: 9.57 seconds, Prompt: prompt_3.j2
+True pos rate: 0.00%, True neg rate: 0.00%, Conf accuracy: 0.00%, Conf coverage: 0.00%
+
+Rows processed: 20, Model: o4-mini-2025-04-16, Time: 24.56 seconds, Prompt: prompt_3.j2
+accuracy: 65.00%, True neg rate: 28.57%, Conf accuracy: 75.00%, Conf coverage: 65.00%
+
+Rows processed: 20, Model: mistral-medium-latest, Time: 5.60 seconds, Prompt: prompt_3.j2
+accuracy: 60.00%, True neg rate: 87.50%, Conf accuracy: 75.00%, Conf coverage: 60.00%
+
+Rows processed: 20, Model: mistral-medium-latest, Time: 12.75 seconds, Prompt: prompt_3.j2
+accuracy: 60.00%, True neg rate: 62.50%, Conf accuracy: 65.00%, Conf coverage: 60.00%
 
