@@ -70,7 +70,7 @@ async def call_chatgpt_async(session, prompt: str, api_key: str, model: str, max
         try:
             async with session.post(
                 url='https://api.openai.com/v1/chat/completions',
-                headers={"Content-Type": "application/json", "Authorization": f"Bearer {OPENAI_SECRET_KEY}"},
+                headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
                 json=payload,
                 ssl=ssl.create_default_context(cafile=certifi.where())
             ) as response:
