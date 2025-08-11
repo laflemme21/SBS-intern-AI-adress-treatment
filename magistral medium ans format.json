@@ -1,0 +1,36 @@
+{
+  "id": "af44e42d3fec4aaf91695b6b185cbc88",
+  "created": 1754896452,
+  "model": "magistral-medium-latest",
+  "usage": {
+    "prompt_tokens": 682,
+    "total_tokens": 1797,
+    "completion_tokens": 1115
+  },
+  "object": "chat.completion",
+  "choices": [
+    {
+      "index": 0,
+      "finish_reason": "stop",
+      "message": {
+        "role": "assistant",
+        "tool_calls": null,
+        "content": [
+          {
+            "type": "thinking",
+            "thinking": [
+              {
+                "type": "text",
+                "text": "D'abord, je vais analyser l'adresse postale donnée : \"25 BANK STREET CANARY WHARF\".\n\n1. **Numéro et nom de la voie** : Je vois \"25 BANK STREET\". Le numéro est \"25\" et le nom de la voie est \"BANK STREET\". Cela semble être la partie principale de l'adresse.\n\n2. **Immeuble / bâtiment / résidence** : Ensuite, il y a \"CANARY WHARF\". Cela pourrait être le nom d'un immeuble ou d'un bâtiment, car Canary Wharf est un quartier connu à Londres, mais il pourrait aussi être une mention spéciale. Cependant, dans le contexte d'une adresse postale, il est plus probable que ce soit le nom d'un immeuble ou d'un bâtiment.\n\n3. **Appartement / étage / escalier** : Il n'y a pas d'information claire sur un appartement, un étage ou un escalier dans cette adresse.\n\n4. **Mention spéciale / lieu-dit** : Si \"CANARY WHARF\" n'est pas considéré comme un immeuble ou un bâtiment, cela pourrait être une mention spéciale ou un lieu-dit. Cependant, comme mentionné précédemment, il est plus probable que ce soit un immeuble ou un bâtiment.\n\n5. **Confiance dans la réponse** : Je suis assez confiant dans cette catégorisation, mais je vais vérifier si \"CANARY WHARF\" est plus probablement un immeuble ou une mention spéciale. Étant donné que Canary Wharf est un quartier connu, il pourrait être une mention spéciale. Cependant, dans le contexte d'une adresse postale, il est souvent utilisé comme nom de bâtiment ou de complexe. Pour être prudent, je vais le mettre dans la mention spéciale.\n\nMaintenant, je vais structurer la réponse selon le format demandé :\n\n- Numéro et nom de la voie : \"25 BANK STREET\"\n- Immeuble / bâtiment / résidence : vide, car \"CANARY WHARF\" est probablement une mention spéciale.\n- Appartement / étage / escalier : vide\n- Mention spéciale / lieu-dit : \"CANARY WHARF\"\n- Confiance : oui\n\nMais en relisant, je me rends compte que \"CANARY WHARF\" pourrait effectivement être le nom d'un bâtiment ou d'un complexe. Pour être sûr, je vais considérer que c'est un immeuble/bâtiment/residence.\n\nDonc, la réponse serait :\n\n\"25 BANK STREET;CANARY WHARF;;;oui\"\n\nMais selon l'exemple 3, si une partie de l'adresse ne rentre pas dans les catégories précédentes, elle va dans \"Mention spéciale / lieu-dit\". Donc, si \"CANARY WHARF\" est un quartier ou un lieu-dit, il devrait aller là.\n\nCependant, dans le contexte britannique, \"Canary Wharf\" est un district financier à Londres, mais il est aussi souvent utilisé comme adresse pour des bâtiments spécifiques. Par exemple, \"One Canada Square\" est un bâtiment célèbre dans Canary Wharf. Donc, \"CANARY WHARF\" pourrait être considéré comme une mention spéciale ou comme le nom d'un bâtiment.\n\nPour suivre l'exemple 3 où des informations supplémentaires étaient placées dans la mention spéciale, je vais mettre \"CANARY WHARF\" dans la mention spéciale.\n\nDonc, la réponse serait :\n\n\"25 BANK STREET;;;CANARY WHARF;oui\"\n\nMais en relisant l'exemple 4, on voit que \"Buxton House\" est considéré comme un immeuble/bâtiment/residence. Donc, peut-être que \"CANARY WHARF\" est aussi un bâtiment.\n\nPour trancher, je vais considérer que \"CANARY WHARF\" est un lieu-dit ou une mention spéciale, car c'est un quartier.\n\nDonc, la réponse finale serait :\n\n\"25 BANK STREET;;;CANARY WHARF;oui\"\n\nMais pour être sûr, je vais vérifier si \"Canary Wharf\" est un bâtiment ou un quartier. Une recherche rapide (si j'avais accès à internet) montrerait que Canary Wharf est un district. Donc, il devrait aller dans la mention spéciale.\n\nDonc, la réponse est :\n\n\"25 BANK STREET;;;CANARY WHARF;oui\"\n\nMais attendez, dans l'exemple 4, \"Buxton House\" est un bâtiment, et \"SW11 2BS\" est un code postal qui est mis dans la mention spéciale. Ici, \"CANARY WHARF\" est plus un lieu-dit qu'un code postal, donc cela semble correct.\n\nCependant, dans le contexte d'une adresse postale, \"Canary Wharf\" pourrait aussi être le nom d'un complexe de bâtiments. Par exemple, une adresse pourrait être \"One Canada Square, Canary Wharf, London\". Dans ce cas, \"Canary Wharf\" est plus un lieu-dit qu'un bâtiment spécifique.\n\nDonc, je vais garder \"CANARY WHARF\" dans la mention spéciale.\n\nLa réponse finale est donc :\n\n\"25 BANK STREET;;;CANARY WHARF;oui\""
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "25 BANK STREET;;;CANARY WHARF;oui"
+          }
+        ]
+      }
+    }
+  ]
+}

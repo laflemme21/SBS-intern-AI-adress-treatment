@@ -121,9 +121,6 @@ Percentage of exact matches: 65.00%
 ####### The tests above dont check for the confidence of the model #######
 
 
-Rows processed: 2, Model: o4-mini-2025-04-16, Time: 9.57 seconds, Prompt: prompt_3.j2
-True pos rate: 0.00%, True neg rate: 0.00%, Conf accuracy: 0.00%, Conf coverage: 0.00%
-
 Rows processed: 20, Model: o4-mini-2025-04-16, Time: 24.56 seconds, Prompt: prompt_3.j2
 accuracy: 65.00%, True neg rate: 28.57%, Conf accuracy: 75.00%, Conf coverage: 65.00%
 
@@ -132,4 +129,22 @@ accuracy: 60.00%, True neg rate: 87.50%, Conf accuracy: 75.00%, Conf coverage: 6
 
 Rows processed: 20, Model: mistral-medium-latest, Time: 12.75 seconds, Prompt: prompt_3.j2
 accuracy: 60.00%, True neg rate: 62.50%, Conf accuracy: 65.00%, Conf coverage: 60.00%
+
+Rows processed: 20, Model: mistral-medium-latest, Time: 3.33 seconds, Prompt: prompt_3.j2
+accuracy: 75.00%, True neg rate: 40.00%, Conf accuracy: 70.00%, Conf coverage: 75.00%
+
+Rows processed: 20, Model: magistral-medium-latest, Time: 134.45 seconds, Prompt: prompt_3.j2
+accuracy: 85.00%, True neg rate: 100.00%, Conf accuracy: 100.00%, Conf coverage: 85.00%
+
+Rows processed: 20, Model: magistral-medium-latest, Time: 131.94 seconds, Prompt: prompt_3.j2
+accuracy: 85.00%, True neg rate: 33.33%, Conf accuracy: 85.00%, Conf coverage: 85.00%
+
+Rows processed: 20, Model: mistral-medium-latest, Time: 2.24 seconds, Prompt: prompt_3.j2
+accuracy: 75.00%, True neg rate: 40.00%, Conf accuracy: 60.00%, Conf coverage: 75.00%
+
+Rows processed: 20, Model: magistral-small-latest, Time: 171.03 seconds, Prompt: prompt_3.j2
+accuracy: 20.00%, True neg rate: 0.00%, Conf accuracy: 10.00%, Conf coverage: 20.00%
+
+Rows processed: 20, Model: magistral-small-latest, Time: 136.55 seconds, Prompt: prompt_3.j2
+accuracy: 35.00%, True neg rate: 15.38%, Conf accuracy: 45.00%, Conf coverage: 35.00%
 

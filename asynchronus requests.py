@@ -99,7 +99,7 @@ async def call_chatgpt_async(session, prompt: str, api_key: str, model: str, max
 
 
 # Call chatGPT for all the given prompts in parallel.
-async def call_chatgpt_bulk(prompts, api_key, model,api_call_func):
+async def call_chatgpt_bulk(prompts, api_key, model, api_call_func):
     """
     Sends multiple prompts to ChatGPT in parallel and preprocesses each response.
 
@@ -112,6 +112,8 @@ async def call_chatgpt_bulk(prompts, api_key, model,api_call_func):
     async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(api_call_func(session, prompt, api_key, model)) for prompt in prompts]
         responses = await asyncio.gather(*tasks)
+        for i, (prompt, resp) in enumerate(zip(prompts, responses)):
+            print(f"Prompt {i}: {prompt[:50]}... -> {resp}")
     return responses
 
 def post_process_response(content):
@@ -231,7 +233,7 @@ if __name__ == "__main__":
         keys = json.load(f)
 
     API_KEY = keys['mistral_api_key']  
-    MODEL = "mistral-medium-latest"
+    MODEL = "magistral-small-latest"
     API_CALL_FUNC = call_mistral_async 
 
 
@@ -242,7 +244,7 @@ if __name__ == "__main__":
     CORRECT_FILE = 'Adresses_test_correct.xlsx'
     LOG_FILE = "asynchronus_requests_log.txt"
     START_COL = 12  # First column to edit (12=M)
-    UPDATE_LOG = True # Set to False to disable logging
+    UPDATE_LOG = True# Set to False to disable logging
 
     # ----------- WORKFLOW SELECTION -----------
     RUN_EXTRACTION = True
@@ -264,6 +266,8 @@ if __name__ == "__main__":
         processed_results = []
 
     if RUN_WRITE_OUTPUT and df is not None and processed_results:
+        print(f"Writing {len(processed_results)} results to Excel.")
+        print("Sample result:", processed_results[0] if processed_results else "None")
         add_answers_to_excel(df, len(prompts), processed_results, start_col=START_COL)
 
     end_time = time.time()

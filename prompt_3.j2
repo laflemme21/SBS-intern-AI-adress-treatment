@@ -3,28 +3,29 @@ Je souhaite que vous catégorisiez chaque sous-séquence de cette chaîne selon 
 
 Voici le format attendu pour votre réponse : Numéro et nom de la voie;Immeuble / bâtiment / résidence;Appartement / étage / escalier;Mention spéciale / lieu-dit;oui si vous êtes confiant de la réponse sinon non
 
-Exigence 1 : Uniquement l'adresse postale sous forme de chaîne de caractères doit être catégorisée, sans inclure le pays/contexte supplémentaire dans la réponse.
-Exigence 2 : Vous devez fournir une réponse contenant exactement 4 délimiteurs ";".
-Exigence 3 : Vous devez fournir une réponse avec des catégories vides si celles-ci ne sont pas présentes dans l’adresse postale d’entrée.
-Exigence 4 : Vous ne devez répondre qu’avec l’adresse postale catégorisée, sans aucun autre commentaire ou texte.
-Exigence 5 : Il ne doit pas y avoir d’espace entre les adresses et les délimiteurs.
-Exigence 6 : Si l’adresse postale contient des informations non demandées, le 5ème champ de la réponse doit être non. Mieux vaut mettre non si tu n'es pas a 100% sûr de ta réponse.
+Exigence 1 : Numéro et nom de la voie ne peuvent jamais être vides, même si l’adresse est incomplète.
+Exigence 2 : Uniquement l'adresse postale sous forme de chaîne de caractères doit être catégorisée, sans inclure le pays/contexte supplémentaire dans la réponse.
+Exigence 3 : Vous devez fournir une réponse contenant exactement 4 délimiteurs ;
+Exigence 4 : Vous devez fournir une réponse avec des catégories vides si celles-ci ne sont pas présentes dans l’adresse postale d’entrée.
+Exigence 5 : Vous ne devez répondre qu’avec l’adresse postale catégorisée, sans aucun autre commentaire ou texte.
+Exigence 6 : Il ne doit pas y avoir d’espace entre les adresses et les délimiteurs.
+Exigence 7 : Si l’adresse postale contient des informations non demandées, le 5ème champ de la réponse doit être non. Mieux vaut mettre non si tu n'es pas a 100% sûr de ta réponse.
 
 exemple 1:
-entrée "RUE SAINT-JEAN", contexte "France" 
-réponse "RUE SAINT-JEAN;;;;oui". 
-Ici l’adresse est incomplète donc les champs manquants sont vides mais la réponse contient exactement 4 délimiteurs ";".
+entrée RUE SAINT-JEAN, contexte France 
+réponse RUE SAINT-JEAN;;;;oui 
+Ici l’adresse est incomplète donc les champs manquants sont vides mais la réponse contient exactement 4 délimiteurs ;
 exemple 2 : 
-entrée "LOUVRE MUSEUM LE BOIS DES OISEAUX RUE DE RIVOLI LEVEL 3", contexte "France" 
-réponse "RUE DE RIVOLI;LOUVRE MUSEUM;LEVEL 3;LE BOIS DES OISEAUX;oui".
+entrée LOUVRE MUSEUM LE BOIS DES OISEAUX RUE DE RIVOLI LEVEL 3, contexte France 
+réponse RUE DE RIVOLI;LOUVRE MUSEUM;LEVEL 3;LE BOIS DES OISEAUX;oui
 Ici l’entrée est complète et la réponse aussi, avec 4 délimiteurs.
 exemple 3 : 
-entrée "ETAGE 8 ALL. DES SOPHORAS LE CHENE SEC FAO MR DUPONT", contexte "France" 
-réponse "ALL. DES SOPHORAS;;ETAGE 8;LE CHENE SEC FAO MR DUPONT;non".
-Ici la mention spéciale contient des informations non demandées, donc le 5ème champ de la réponse est "non".
+entrée ETAGE 8 ALL. DES SOPHORAS LE CHENE SEC FAO MR DUPONT, contexte France 
+réponse ALL. DES SOPHORAS;;ETAGE 8;LE CHENE SEC FAO MR DUPONT;oui
+Ici la mention spéciale contient des informations non demandées comme un nom de personne, donc on le met dans Mention spéciale / lieu-dit
 exemple 4 :
-entrée "29 Maysoule Rd SW11 2BS apt 5 Buxton House", contexte "Royaume-Uni"
-réponse "29 Maysoule Rd;Buxton House;apt 5;SW11 2BS;oui".
+entrée 29 Maysoule Rd SW11 2BS apt 5 Buxton House , contexte Royaume-Uni
+réponse 29 Maysoule Rd;Buxton House;apt 5;SW11 2BS;oui
 
 Voici l’adresse postale en entrée : {{address}}
 Voici le pays pour contexte supplémentaire : {{context}}

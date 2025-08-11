@@ -1,6 +1,7 @@
 import requests
 import aiohttp
 import asyncio
+import random 
 
 
 def post_process_response(content):
@@ -10,7 +11,7 @@ def post_process_response(content):
     return tuple(field.strip() for field in fields[:5])
 
 
-async def call_mistral_async(session, prompt: str, api_key: str, model: str, max_retries=3):
+async def call_mistral_async(session, prompt: str, api_key: str, model: str, max_retries=100):
     """
     Sends a single prompt to the Mistral API and preprocesses the response.
     Retries if rate limit is exceeded.
@@ -41,24 +42,43 @@ async def call_mistral_async(session, prompt: str, api_key: str, model: str, max
         try:
             async with session.post(url, headers=headers, json=data) as response:
                 response_json = await response.json()
-            if "error" in response_json:
-                error = response_json["error"]
-                print(f"Mistral request failed with error {error}")
+            if "object" in response_json and response_json["object"] == "error":
+                error = response_json['message']
+                print(f"Mistral request failed with error {error}, {retries} retries")
                 # Check for rate limit and retry
-                if isinstance(error, dict) and error.get("code") == "rate_limit_exceeded":
-                    await asyncio.sleep(2)
-                    retries += 1
-                    continue
-                return "N/A", "N/A", "N/A", "N/A", "N/A"
-            # Extract the content and preprocess it immediately
-            raw_content = response_json['choices'][0]['message']['content']
-            # You can use your own post_process_response function here
-            result = post_process_response(raw_content)
-            if len(result) < 5:
-                result = tuple(list(result) + ["N/A"] * (5 - len(result)))
-            return result
+                if error == "Rate limit exceeded":
+                    await asyncio.sleep(random.expovariate(1/(0.5+ 2.5)))  # Random sleep to avoid hitting the rate limit again
+            else:
+                try:
+                    # Defensive extraction of content
+                    choices = response_json.get('choices')
+                    if not choices or not isinstance(choices, list) or not choices[0].get('message'):
+                        print(f"Unexpected response structure: {response_json}")
+                    else:
+                        content_field = choices[0]['message'].get('content')
+                        raw_content = ""
+                        if isinstance(content_field, str):
+                            raw_content = content_field
+                        elif isinstance(content_field, list):
+                            for item in content_field:
+                                if isinstance(item, dict) and "text" in item:
+                                    raw_content = item["text"]
+                                    break
+                            if not raw_content:
+                                raw_content = str(content_field)
+                        else:
+                            raw_content = str(content_field)
+                        result = post_process_response(raw_content)
+                except Exception as e:
+                    print(f"Error extracting content: {e}, response: {response_json}")
+                    return "N/A", "N/A", "N/A", "N/A", "N/A"
+                if len(result) < 5:
+                    result = tuple(list(result) + ["N/A"] * (5 - len(result)))
+                return result
         except Exception as e:
-            print(f"Mistral request failed: {e}")
+            print(f"Mistral request failed: {e}, {retries} retries")
             await asyncio.sleep(0.2)
+        finally:
             retries += 1
+    print("Max retries exceeded, returning default values.")
     return "N/A", "N/A", "N/A", "N/A", "N/A"
