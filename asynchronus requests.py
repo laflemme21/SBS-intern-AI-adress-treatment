@@ -37,14 +37,27 @@ def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None):
 
     prompts = []
     for address, context in zip(addresses, contexts):
-        # Set context to "FRANCE" if it is empty or NaN
-        if not isinstance(context, str) or context.strip() == "":
-            context = "FRANCE"
-        # Pass the address and context to the jinja2 prompt template
-        prompt = prompt_template.render(address=address, context=context)
-        prompts.append(prompt)
+        prompts.append(build_prompt(address, context, prompt_template))
 
     return prompts, df
+
+def build_prompt(address: str, context: str, template: Template) -> str:
+    """
+    Builds a prompt using the provided address, context, and template.
+
+    Args:
+        address (str): The address to include in the prompt.
+        context (str): The context to include in the prompt.
+        template (Template): The Jinja2 template to use for building the prompt.
+
+    Returns:
+        str: The constructed prompt.
+    """
+    # Set context to "FRANCE" if it is empty or NaN
+    if not isinstance(context, str) or context.strip() == "":
+        context = "FRANCE"
+    # Pass the address and context to the jinja2 prompt template
+    return template.render(address=address, context=context)
 
 # Call ChatGPT with the given prompt, asynchronously.
 async def call_chatgpt_async(session, prompt: str, api_key: str, model: str, max_retries=3):
@@ -112,8 +125,6 @@ async def call_chatgpt_bulk(prompts, api_key, model, api_call_func):
     async with aiohttp.ClientSession() as session, asyncio.TaskGroup() as tg:
         tasks = [tg.create_task(api_call_func(session, prompt, api_key, model)) for prompt in prompts]
         responses = await asyncio.gather(*tasks)
-        for i, (prompt, resp) in enumerate(zip(prompts, responses)):
-            print(f"Prompt {i}: {prompt[:50]}... -> {resp}")
     return responses
 
 def post_process_response(content):
@@ -155,9 +166,7 @@ def add_answers_to_excel(df, n_rows, responses, start_col=12):
         existing_df.at[row_index, existing_df.columns[start_col + 2]] = etage_appartement
         existing_df.at[row_index, existing_df.columns[start_col + 3]] = mention_speciale
         existing_df.at[row_index, existing_df.columns[start_col + 4]] = confidence_score  # Add confidence score
-
-    # Save the updated DataFrame back to the file, keeping all rows
-    existing_df.to_excel('Adresses_test.xlsx', index=False, header=True, engine='openpyxl')
+    return existing_df
 
 def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mark_col=17):
     """
@@ -226,6 +235,45 @@ def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mar
 
     return accuracy, true_negative, confidence_accuracy, confidence_coverage
 
+def add_second_round_to_excel(row_indices, answers, df, start_col=12, mark_col=17):
+    """Write second round results back to df using provided row indices order."""
+    for key, value in zip(row_indices, answers):
+        numero_voie, immeuble_residence, etage_appartement, mention_speciale, confidence_score = value
+        df.at[key, df.columns[start_col]] = numero_voie
+        df.at[key, df.columns[start_col + 1]] = immeuble_residence
+        df.at[key, df.columns[start_col + 2]] = etage_appartement
+        df.at[key, df.columns[start_col + 3]] = mention_speciale
+        df.at[key, df.columns[start_col + 4]] = confidence_score
+    return df
+
+def second_round_detecting(df, context_col=9, concat_col=11, start_col=12, detect='non') -> list:
+    """Return lists of (row_indices, addresses, contexts) for rows with 'detect' in confidence col."""
+    mask = df.iloc[:, start_col + 4].astype(str).str.contains(detect, na=False)
+    sub = df[mask]
+    keys = sub.index.tolist()
+    addresses = sub.iloc[:, concat_col].tolist()
+    contexts = sub.iloc[:, context_col].tolist()
+    return keys, addresses, contexts
+
+def second_round_processing(df, prompt_template, context_col=9, start_col=12):
+    keys, addresses, contexts = second_round_detecting(df, start_col=start_col, context_col=context_col)
+    if not keys:
+        print("No addresses found for second round processing.")
+        return df
+
+    with open(prompt_template, "r", encoding="utf-8") as f:
+        prompt_template = Template(f.read().strip())
+
+    prompts = [build_prompt(address, context, prompt_template) for address, context in zip(addresses, contexts)]
+
+    processed_results = asyncio.run(call_chatgpt_bulk(prompts, API_KEY, FIRST_ROUND_MODEL, API_CALL_FUNC))
+
+    for i, key in enumerate(keys):
+        print(f"Second round processing for row {key}: {processed_results[i]}")
+
+    df = add_second_round_to_excel(keys, processed_results, df, start_col=start_col)
+    return df
+
 if __name__ == "__main__":
     # ----------- CONFIGURATION -----------
 
@@ -233,13 +281,15 @@ if __name__ == "__main__":
         keys = json.load(f)
 
     API_KEY = keys['mistral_api_key']  
-    MODEL = "magistral-small-latest"
-    API_CALL_FUNC = call_mistral_async 
+    FIRST_ROUND_MODEL = "mistral-medium-latest"
+    SECOND_ROUND_MODEL = "magistral-medium-latest"
+    API_CALL_FUNC = call_mistral_async
 
 
     N_ROWS = 20  # Number of rows to process
     INPUT_FILE = 'Adresses_test.xlsx'
-    PROMPT_FILE = 'prompt_3.j2'
+    FIRST_ROUND_PROMPT_FILE = 'prompt_4.j2'
+    SECOND_ROUND_PROMPT_FILE = 'prompt2_1.j2'
     OUTPUT_FILE = 'Adresses_test.xlsx'
     CORRECT_FILE = 'Adresses_test_correct.xlsx'
     LOG_FILE = "asynchronus_requests_log.txt"
@@ -248,7 +298,8 @@ if __name__ == "__main__":
 
     # ----------- WORKFLOW SELECTION -----------
     RUN_EXTRACTION = True
-    RUN_AI = True
+    RUN_FIRST_ROUND_AI = True
+    RUN_SECOND_ROUND_AI = False
     RUN_WRITE_OUTPUT = True
     RUN_COMPARE = True
 
@@ -256,19 +307,26 @@ if __name__ == "__main__":
     start_time = time.time()
 
     if RUN_EXTRACTION:
-        prompts, df = extract_from_excel_and_build_prompt(INPUT_FILE, n_rows=N_ROWS, prompt_file=PROMPT_FILE)
+        prompts, df = extract_from_excel_and_build_prompt(INPUT_FILE, n_rows=N_ROWS, prompt_file=FIRST_ROUND_PROMPT_FILE)
     else:
         prompts, df = [], None
 
-    if RUN_AI and prompts:
-        processed_results = asyncio.run(call_chatgpt_bulk(prompts, API_KEY, MODEL, API_CALL_FUNC))
+    if RUN_FIRST_ROUND_AI and prompts:
+        processed_results = asyncio.run(call_chatgpt_bulk(prompts, API_KEY, FIRST_ROUND_MODEL, API_CALL_FUNC))
     else:
         processed_results = []
 
-    if RUN_WRITE_OUTPUT and df is not None and processed_results:
+    if df is not None and processed_results:
         print(f"Writing {len(processed_results)} results to Excel.")
         print("Sample result:", processed_results[0] if processed_results else "None")
-        add_answers_to_excel(df, len(prompts), processed_results, start_col=START_COL)
+        df=add_answers_to_excel(df, len(prompts), processed_results, start_col=START_COL)
+        # Save the updated DataFrame back to the file, keeping all rows
+
+    if RUN_FIRST_ROUND_AI and RUN_SECOND_ROUND_AI and df is not None:
+        df = second_round_processing(df, SECOND_ROUND_PROMPT_FILE, context_col=9, start_col=12)
+
+    if RUN_WRITE_OUTPUT and df is not None:
+        df.to_excel('Adresses_test.xlsx', index=False, header=True, engine='openpyxl')
 
     end_time = time.time()
     elapsed_time = end_time - start_time
@@ -281,7 +339,10 @@ if __name__ == "__main__":
     # ----------- LOGGING -----------
     if UPDATE_LOG:
         with open(LOG_FILE, "a", encoding="utf-8") as f:
-            f.write(f"Rows processed: {len(prompts)}, Model: {MODEL}, Time: {elapsed_time:.2f} seconds, Prompt: {PROMPT_FILE}\n")
+            f.write(f"Rows processed: {len(prompts)}, Model: {FIRST_ROUND_MODEL}")
+            if RUN_SECOND_ROUND_AI:
+                f.write(f" AND {SECOND_ROUND_MODEL}")
+            f.write(f", Time: {elapsed_time:.2f} seconds, Prompt: {FIRST_ROUND_PROMPT_FILE}\n")
             if accuracy is not None:
                 f.write(f"accuracy: {accuracy:.2f}%, ")
             if true_negative is not None:
