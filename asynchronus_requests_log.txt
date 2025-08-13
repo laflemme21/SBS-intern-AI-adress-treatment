@@ -166,3 +166,18 @@ accuracy: 70.00%, True neg rate: 16.67%, Conf accuracy: 65.00%, Conf coverage: 7
 Rows processed: 20, Model: mistral-medium-latest, Time: 2.59 seconds, Prompt: prompt_4.j2
 accuracy: 75.00%, True neg rate: 40.00%, Conf accuracy: 70.00%, Conf coverage: 75.00%
 
+Rows processed: 12, Model: mistral-medium-latest, Time: 7.18 seconds, Prompt: prompt_4.j2
+accuracy: 8.33%, True neg rate: 9.09%, Conf accuracy: 16.67%, Conf coverage: 8.33%
+
+Rows processed: 12, Model: mistral-medium-latest, Time: 2.85 seconds, Prompt: prompt_3.j2
+accuracy: 75.00%, True neg rate: 33.33%, Conf accuracy: 83.33%, Conf coverage: 75.00%
+
+Rows processed: 12, Model: mistral-medium-latest, Time: 2.40 seconds, Prompt: prompt_3.j2
+accuracy: 8.33%, True neg rate: 27.27%, Conf accuracy: 33.33%, Conf coverage: 8.33%
+
+Rows processed: 12, Model: mistral-medium-latest, Time: 2.96 seconds, Prompt: prompt_3.j2
+accuracy: 16.67%, True neg rate: 30.00%, Conf accuracy: 41.67%, Conf coverage: 16.67%
+
+Rows processed: 14, Model: mistral-medium-latest, Time: 5.42 seconds, Prompt: prompt_3.j2
+accuracy: 7.14%, True neg rate: 15.38%, Conf accuracy: 21.43%, Conf coverage: 7.14%
+

@@ -11,7 +11,7 @@ import json
 from mistral_API import call_mistral_async  # Add this import at the top
 
 # Function to extract addresses from an Excel file
-def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None):
+def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None, build_prompt_bool=True):
     """
     Extracts addresses from a specified column in an Excel file and builds prompts using a template from a file.
 
@@ -24,9 +24,6 @@ def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None):
         list: List of prompts.
         pd.DataFrame: The DataFrame containing the extracted rows.
     """
-    # Read the prompt template from the file
-    with open(prompt_file, "r", encoding="utf-8") as f:
-        prompt_template = Template(f.read().strip())
 
     df = pd.read_excel(file_path, engine='openpyxl', header=0)
     if n_rows:
@@ -34,12 +31,17 @@ def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None):
 
     addresses = df['Adresse concat'].tolist()
     contexts = df.iloc[:, 9].tolist()  # Column J (index 9)
+    if build_prompt_bool:
+        # Read the prompt template from the file
+        with open(prompt_file, "r", encoding="utf-8") as f:
+            prompt_template = Template(f.read().strip())
+        prompts = []
+        for address, context in zip(addresses, contexts):
+            prompts.append(build_prompt(address, context, prompt_template))
 
-    prompts = []
-    for address, context in zip(addresses, contexts):
-        prompts.append(build_prompt(address, context, prompt_template))
-
-    return prompts, df
+        return prompts, df
+    else:
+        return addresses, contexts, df
 
 def build_prompt(address: str, context: str, template: Template) -> str:
     """
@@ -133,7 +135,7 @@ def post_process_response(content):
         fields.append("N/A")
     return tuple(field.strip() for field in fields[:5])
 
-def add_answers_to_excel(df, n_rows, responses, start_col=12):
+def add_answers_to_excel(df, n_rows, responses, file_path,start_col=12):
     """
     Updates the DataFrame with the processed responses and saves it back to the Excel file.
 
@@ -144,7 +146,7 @@ def add_answers_to_excel(df, n_rows, responses, start_col=12):
         start_col (int): Starting column index to update in the DataFrame.
     """
     # Load the existing data from the file to preserve it
-    existing_df = pd.read_excel('Adresses_test.xlsx', engine='openpyxl', header=0)
+    existing_df = pd.read_excel(file_path, engine='openpyxl', header=0)
 
     # Ensure enough columns exist
     needed_cols = start_col + 5  # 5 fields to write
@@ -286,11 +288,11 @@ if __name__ == "__main__":
     API_CALL_FUNC = call_mistral_async
 
 
-    N_ROWS = 20  # Number of rows to process
-    INPUT_FILE = 'Adresses_test.xlsx'
-    FIRST_ROUND_PROMPT_FILE = 'prompt_4.j2'
+    N_ROWS = 14  # Number of rows to process
+    INPUT_FILE = 'Adresses_test copy.xlsx'
+    FIRST_ROUND_PROMPT_FILE = 'prompt_3.j2'
     SECOND_ROUND_PROMPT_FILE = 'prompt2_1.j2'
-    OUTPUT_FILE = 'Adresses_test.xlsx'
+    OUTPUT_FILE = 'Adresses_test copy.xlsx'
     CORRECT_FILE = 'Adresses_test_correct.xlsx'
     LOG_FILE = "asynchronus_requests_log.txt"
     START_COL = 12  # First column to edit (12=M)
@@ -319,14 +321,14 @@ if __name__ == "__main__":
     if df is not None and processed_results:
         print(f"Writing {len(processed_results)} results to Excel.")
         print("Sample result:", processed_results[0] if processed_results else "None")
-        df=add_answers_to_excel(df, len(prompts), processed_results, start_col=START_COL)
+        df=add_answers_to_excel(df, len(prompts), processed_results, OUTPUT_FILE, start_col=START_COL)
         # Save the updated DataFrame back to the file, keeping all rows
 
     if RUN_FIRST_ROUND_AI and RUN_SECOND_ROUND_AI and df is not None:
         df = second_round_processing(df, SECOND_ROUND_PROMPT_FILE, context_col=9, start_col=12)
 
     if RUN_WRITE_OUTPUT and df is not None:
-        df.to_excel('Adresses_test.xlsx', index=False, header=True, engine='openpyxl')
+        df.to_excel(OUTPUT_FILE, index=False, header=True, engine='openpyxl')
 
     end_time = time.time()
     elapsed_time = end_time - start_time
