@@ -8,7 +8,7 @@ import os
 from jinja2 import Template
 import json
 
-from mistral_API import call_mistral_async  # Add this import at the top
+from mistral_API import call_mistral_async, send_batch_prompts  # Add this import at the top
 
 # Function to extract addresses from an Excel file
 def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None, build_prompt_bool=True):
@@ -198,9 +198,10 @@ def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mar
     for idx in range(n_rows):
         is_all_true = True
         for col in range(start_col, start_col + 4):
-            val_pred = str(df_pred.iloc[idx, col]).strip()
-            val_corr = str(df_corr.iloc[idx, col]).strip()
-            if val_pred != val_corr:
+            val_pred = str(df_pred.iloc[idx, col]).strip().lower().split(' ')
+            val_corr = str(df_corr.iloc[idx, col]).strip().lower().split()
+            # Compare as sets so order doesn't matter, but all elements must match
+            if set(val_pred) != set(val_corr):
                 is_all_true = False
                 break
         pred_last = str(df_pred.iloc[idx, start_col + 4]).strip().lower()  # 5th field: yes/no
@@ -288,11 +289,11 @@ if __name__ == "__main__":
     API_CALL_FUNC = call_mistral_async
 
 
-    N_ROWS = 14  # Number of rows to process
-    INPUT_FILE = 'Adresses_test copy.xlsx'
-    FIRST_ROUND_PROMPT_FILE = 'prompt_3.j2'
+    N_ROWS = 400 # Number of rows to process
+    INPUT_FILE = 'Adresses_test.xlsx'
+    FIRST_ROUND_PROMPT_FILE = 'prompt_4.j2'
     SECOND_ROUND_PROMPT_FILE = 'prompt2_1.j2'
-    OUTPUT_FILE = 'Adresses_test copy.xlsx'
+    OUTPUT_FILE = 'Adresses_test.xlsx'
     CORRECT_FILE = 'Adresses_test_correct.xlsx'
     LOG_FILE = "asynchronus_requests_log.txt"
     START_COL = 12  # First column to edit (12=M)
@@ -300,38 +301,45 @@ if __name__ == "__main__":
 
     # ----------- WORKFLOW SELECTION -----------
     RUN_EXTRACTION = True
-    RUN_FIRST_ROUND_AI = True
+    RUN_ASYNC_FIRST_ROUND_AI = True
+    RUN_BATCH_FIRST_MISTRAL = False
     RUN_SECOND_ROUND_AI = False
     RUN_WRITE_OUTPUT = True
     RUN_COMPARE = True
 
     # ----------- PIPELINE -----------
-    start_time = time.time()
 
     if RUN_EXTRACTION:
         prompts, df = extract_from_excel_and_build_prompt(INPUT_FILE, n_rows=N_ROWS, prompt_file=FIRST_ROUND_PROMPT_FILE)
     else:
         prompts, df = [], None
 
-    if RUN_FIRST_ROUND_AI and prompts:
+    if RUN_ASYNC_FIRST_ROUND_AI and (not RUN_BATCH_FIRST_MISTRAL) and prompts:
+        start_time_1 = time.time()    
         processed_results = asyncio.run(call_chatgpt_bulk(prompts, API_KEY, FIRST_ROUND_MODEL, API_CALL_FUNC))
+        end_time_1 = time.time()
+        elapsed_time = end_time_1 - start_time_1
+    elif RUN_BATCH_FIRST_MISTRAL and (not RUN_ASYNC_FIRST_ROUND_AI) and prompts:
+        start_time_1 = time.time()    
+        processed_results = send_batch_prompts(prompts, API_KEY, FIRST_ROUND_MODEL)
+        end_time_1 = time.time()
+        elapsed_time = end_time_1 - start_time_1
     else:
         processed_results = []
 
     if df is not None and processed_results:
-        print(f"Writing {len(processed_results)} results to Excel.")
-        print("Sample result:", processed_results[0] if processed_results else "None")
         df=add_answers_to_excel(df, len(prompts), processed_results, OUTPUT_FILE, start_col=START_COL)
         # Save the updated DataFrame back to the file, keeping all rows
 
-    if RUN_FIRST_ROUND_AI and RUN_SECOND_ROUND_AI and df is not None:
+    if (RUN_ASYNC_FIRST_ROUND_AI or RUN_BATCH_FIRST_MISTRAL) and RUN_SECOND_ROUND_AI and df is not None:
+        start_time_2 = time.time()
         df = second_round_processing(df, SECOND_ROUND_PROMPT_FILE, context_col=9, start_col=12)
+        end_time_2 = time.time()
+        elapsed_time = elapsed_time + end_time_2 - start_time_2
 
     if RUN_WRITE_OUTPUT and df is not None:
         df.to_excel(OUTPUT_FILE, index=False, header=True, engine='openpyxl')
 
-    end_time = time.time()
-    elapsed_time = end_time - start_time
 
     if RUN_COMPARE:
         accuracy, true_negative, confidence_accuracy, confidence_coverage = compare_with_correct(OUTPUT_FILE, CORRECT_FILE, len(prompts), start_col=START_COL)

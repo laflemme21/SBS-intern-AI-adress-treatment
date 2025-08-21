@@ -19,9 +19,58 @@
         "p/p",
         "via",
         "through",
-        "par",
         "Attention",
         "Chez",
-        "Presso"
+        "Presso",
+        "POB",
+        "PO Box",
+        "B.P.",
+        "postbus",
+        "CS",
+        "ZI",
+        "lieu dit"
+,
+    "hameau",
+    "écart",
+    "mas",
+    "ferme",
+    "grange",
+    "moulin",
+    "château",
+    "cabane",
+    "colline",
+    "plateau",
+    "vallon",
+    "prairie",
+    "bois",
+    "forêt",
+    "marais",
+    "rivage",
+    "plage",
+    "port",
+    "île",
+    "zac",
+    "zae"
+
+    ],
+    "floor": [
+        "floor",
+        "suite",
+        "etage",
+        "level"
+    ],
+    "immeuble": [
+        "immeuble",
+        "batiment",
+        "tour",
+        "building"
+    ],
+
+    "rue": [
+        "rue", "avenue", "boulevard", "chemin", "impasse", "allée", "place", "cours", "quai", "passage",
+        "route", "voie", "traverse", "sentier", "rampe", "chaussée", "square", "lane", "drive", "street",
+        "road", "way", "court", "circle", "terrace", "trail", "parkway", "loop", "via", "viale", "calle",
+        "paseo", "camino", "carretera", "straat", "laan", "weg"
     ]
+
 }
