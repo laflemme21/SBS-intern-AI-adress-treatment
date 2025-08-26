@@ -1,0 +1,25 @@
+Tâche: Catégoriser une adresse postale.
+
+Format de sortie (exactement 4 ';'):
+Numéro et nom de la voie;Immeuble/bâtiment/résidence;Appartement/étage/escalier;Mention spéciale/lieu-dit;oui|non
+
+Règles:
+- Le champ 1 ne peut jamais être vide.
+- Catégoriser uniquement l'adresse en t'aidant du contexte.
+- Laisser les catégories vides si absentes.
+- Répondre uniquement par la chaîne formatée.
+- Mettre "non" si tu n'es pas sûr de la réponse, sinon "oui".
+- Toute info supplémentaire incluse dans l'adresse doit être fournie dans le champ Mention spéciale/lieu-dit.
+Exemples:
+- Entrée: RUE SAINT-JEAN | Contexte: pays: France, "rue" : "Numéro et nom de la voie"
+  Réponse: RUE SAINT-JEAN;;;;oui
+- Entrée: ETAGE 8 ALL. DES SOPHORAS LE CHENE SEC FAO A/C MR DUPONT | Contexte: pays: France, "étage" mot clé de  "Appartement/étage/escalier"
+  Réponse: ALL. DES SOPHORAS;;ETAGE 8;LE CHENE SEC FAO A/C MR DUPONT;oui
+- Entrée: 29 Maysoule Rd SW11 2BS apt 5 Buxton House | Contexte: pays: Royaume-Uni 
+  Réponse: 29 Maysoule Rd;Buxton House;apt 5;SW11 2BS;non
+- Entrée: BP 123 | Contexte: pays: États-Unis, "bp"  mot clé de "Mention spéciale/lieu-dit"
+  Réponse: BP 123;;;;oui
+
+Entrées:
+- Adresse: {{address}}
+- Contexte: pays: {{pays}} {{context}}

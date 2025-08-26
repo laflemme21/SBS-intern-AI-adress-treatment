@@ -115,18 +115,76 @@ def compare_word_sets(df, unique_col, list_cols):
     
     return df.loc[matching_indices]
 
+def all_columns_keyword_check(df, list_of_keywords, list_of_columns):
+    """
+    Check if any of the keywords are present in all specified columns of the DataFrame.
+    if a key word is specified in a columns from the same index as the list it belongs to, 
+    we increment a value, if it is found in a different column, we increment another value
+
+    Args:
+        list_of_keywords (list): List of keywords to check for.
+        list_of_columns (list): List of column names to check in.
+
+    Returns:
+        pd.Series: A boolean Series indicating the presence of keywords in all columns.
+    """
+    right_keywords = 0
+    right_indices = []
+    for keywords, column in zip(list_of_keywords, list_of_columns):
+        if column in df.columns:
+            for keyword in keywords:
+                pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+                mask = df[column].astype(str).str.lower().str.contains(pattern, regex=True, na=False)
+                right_keywords += mask.sum()
+                if mask.any():
+                    right_indices.extend(df[mask].index.tolist())
+                    print(f"Rows containing '{keyword}' in column '{column}':")
+                    print(df[mask][column])
+        else:
+            print(f"Column '{column}' not found in DataFrame")
+            return None
+
+    wrong_keywords = 0
+    wrong_indices = []
+    for k in range(len(list_of_keywords)):
+        for c in [i for i in range(len(list_of_columns)) if i != k]:
+            column = list_of_columns[c]
+            if column in df.columns:
+                for keyword in list_of_keywords[k]:
+                    pattern = r'\b' + re.escape(keyword.lower()) + r'\b'
+                    mask = df[column].astype(str).str.lower().str.contains(pattern, regex=True, na=False)
+                    wrong_keywords += mask.sum()
+                    if mask.any():
+                        wrong_indices.extend(df[mask].index.tolist())
+
+    # Print the index of the first 10 right and wrong addresses
+    print("First 10 indices of right addresses:", right_indices[:10])
+    print("First 10 indices of wrong addresses:", wrong_indices[:10])
+
+    return right_keywords, wrong_keywords
+
+
 # Example usage (uncomment to test)
-# if __name__ == "__main__":
-#     # Load keywords from JSON file
-#     with open('common_words.json', 'r', encoding='utf-8') as f:
-#         common_words = json.load(f)
-#     
-#     # Extract data from Excel
-#     df = extract_columns_from_excel('Adresses_test.xlsx', ['Adresse concat', 'Column2'])
-#     
-#     # Check for specific keywords in a column
-#     has_keywords = check_keywords_in_column(df, 'Adresse concat', common_words['rue'])
-#     
-#     # Filter DataFrame based on keyword matches
-#     keyword_matches = df[has_keywords]
-#     print(f"Found {len(keyword_matches)} rows with street keywords")
+if __name__ == "__main__":
+    # Load keywords from JSON file
+    with open('common_words.json', 'r', encoding='utf-8') as f:
+        common_words = json.load(f)
+
+    columns=['Numero de voie et voie','immeuble residence','Appartement / etage','mention speciale / lieu dit']
+    number_of_rows = 400
+
+    # Extract data from Excel
+    df = extract_columns_from_excel('Adresses_test.xlsx', columns)
+
+    # keep the number of rows specified
+    df = df.head(number_of_rows)
+
+    # keep only rows that have two or more non empty cells
+    df = df[df.notna().sum(axis=1) >= 2]
+
+    number_of_non_empty_cells = df.notna().sum().sum()
+    # Check for specific keywords in columns, and get the number of matches in the right and wrong columns
+    right_columns,wrong_columns = all_columns_keyword_check(df, list(common_words.values()), columns)
+    print(f"Found {right_columns} rows with keywords in the right columns, percentage of right: {right_columns/(right_columns+wrong_columns)*100:.2f}%")
+    print(f"Found {wrong_columns} rows with keywords in the wrong columns, percentage of wrong: {wrong_columns/(wrong_columns+right_columns)*100:.2f}%")
+    print(f"Percentage of cells with keywords: {(right_columns+wrong_columns)/(number_of_non_empty_cells)*100:.2f}%")

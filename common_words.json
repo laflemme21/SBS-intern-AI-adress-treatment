@@ -1,12 +1,36 @@
 {
-    "att_of_list": [
+    "Numéro et nom de la voie": [
+        "rue", "avenue", "boulevard", "allée",  "cours", "passage","place",
+        "route", "voie", "traverse", "sentier", "rampe", "chaussée", "square", "lane", "drive", "street",
+        "road", "way", "court", "circle", "trail", "parkway", "loop", "via", "viale", "calle",
+        "paseo", "camino", "carretera", "straat", "laan", "weg","SLAKWEIDESTRAAT", "Rd", "St"
+    ],
+    "Immeuble/bâtiment/résidence": [
+        "immeuble",
+        "batiment",
+        "tour",
+        "building"
+    ],
+    "Appartement/étage/escalier": [
+        "floor",
+        "suite",
+        "etage",
+        "étage",
+        "level",
+        "bloc",
+        "appartement",
+        "flat",
+        "apt"
+    ],
+
+    "Mention spéciale/lieu-dit": [
         "c/o",
         "c/-",
         "℅",
         "ATTN",
         "Attn.",
         "FAO",
-        "à l’att.",
+        "l’att.",
         "A/A",
         "Atte.",
         "c.a.",
@@ -23,12 +47,16 @@
         "Chez",
         "Presso",
         "POB",
-        "PO Box",
+        "PO",
         "B.P.",
         "postbus",
         "CS",
         "ZI",
-        "lieu dit"
+        "lieu",
+        "att.",
+        "cp",
+        "b",
+        "p.o."
 ,
     "hameau",
     "écart",
@@ -50,27 +78,19 @@
     "port",
     "île",
     "zac",
-    "zae"
+    "zae",
+    "zone",
+    "secteur",
+    "boite",
+    "bp",
+    "b.p.",
+    "l'attention",
+    "parc",
+    "z.i.",
+    "z.a.",
+    "z.a.e.",
+    "wharf"
 
-    ],
-    "floor": [
-        "floor",
-        "suite",
-        "etage",
-        "level"
-    ],
-    "immeuble": [
-        "immeuble",
-        "batiment",
-        "tour",
-        "building"
-    ],
-
-    "rue": [
-        "rue", "avenue", "boulevard", "chemin", "impasse", "allée", "place", "cours", "quai", "passage",
-        "route", "voie", "traverse", "sentier", "rampe", "chaussée", "square", "lane", "drive", "street",
-        "road", "way", "court", "circle", "terrace", "trail", "parkway", "loop", "via", "viale", "calle",
-        "paseo", "camino", "carretera", "straat", "laan", "weg"
     ]
 
 }

@@ -7,11 +7,12 @@ import pandas as pd
 import os
 from jinja2 import Template
 import json
+import xlwings as xw
 
 from mistral_API import call_mistral_async, send_batch_prompts  # Add this import at the top
 
 # Function to extract addresses from an Excel file
-def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None, build_prompt_bool=True):
+def extract_from_excel_and_build_prompt(file_path, keywords, prompt_file,n_rows=1, build_prompt_bool=True):
     """
     Extracts addresses from a specified column in an Excel file and builds prompts using a template from a file.
 
@@ -30,36 +31,75 @@ def extract_from_excel_and_build_prompt(file_path, prompt_file, n_rows=None, bui
         df = df.head(n_rows)
 
     addresses = df['Adresse concat'].tolist()
-    contexts = df.iloc[:, 9].tolist()  # Column J (index 9)
+    pays_liste = df.iloc[:, 9].tolist()  # Column J (index 9)
     if build_prompt_bool:
         # Read the prompt template from the file
         with open(prompt_file, "r", encoding="utf-8") as f:
             prompt_template = Template(f.read().strip())
         prompts = []
-        for address, context in zip(addresses, contexts):
-            prompts.append(build_prompt(address, context, prompt_template))
+        for address, pays in zip(addresses, pays_liste):
+            context = build_context_string(extract_keywords(address, keywords))
+            prompts.append(build_prompt(address, pays, context=context, template=prompt_template))
 
         return prompts, df
     else:
-        return addresses, contexts, df
+        return addresses, pays_liste, df
 
-def build_prompt(address: str, context: str, template: Template) -> str:
+def extract_keywords(address_concat: str,keywords:dict) -> dict:
     """
-    Builds a prompt using the provided address, context, and template.
+    Extracts keywords from the concatenated address string.
+
+    Args:
+        address_concat (str): The concatenated address string.
+        keywords (dict): A dictionary of keywords to extract.
+
+    Returns:
+        dict: A dictionary containing the extracted keywords.
+    """
+    address=address_concat.lower().split(" ")
+    keywords_found = {}
+    for index, keyword_list in keywords.items():
+        for keyword in keyword_list:
+            if keyword.lower() in address:
+                keywords_found[index] = keyword
+    return keywords_found
+
+def build_context_string(keywords: dict) -> str:
+    """
+    Builds a context string from the extracted keywords.
+
+    Args:
+        keywords (dict): A dictionary of extracted keywords.
+
+    Returns:
+        str: The constructed context string.
+    """
+    context_parts = []
+    for key, value in keywords.items():
+        if value:
+            context_parts.append(f"{str(value).capitalize()} = {key}")
+    if len(context_parts) > 0:
+        return ", "+(", ".join(context_parts))
+    return ""
+
+def build_prompt(address: str, pays: str, context: str, template: Template) -> str:
+    """
+    Builds a prompt using the provided address, pays, and template.
 
     Args:
         address (str): The address to include in the prompt.
-        context (str): The context to include in the prompt.
+        pays (str): The pays to include in the prompt.
         template (Template): The Jinja2 template to use for building the prompt.
 
     Returns:
         str: The constructed prompt.
     """
-    # Set context to "FRANCE" if it is empty or NaN
-    if not isinstance(context, str) or context.strip() == "":
-        context = "FRANCE"
-    # Pass the address and context to the jinja2 prompt template
-    return template.render(address=address, context=context)
+    # Set pays to "FRANCE" if it is empty or NaN
+    if not isinstance(pays, str) or pays.strip() == "":
+        pays = "FRANCE"
+    print(template.render(address=address, pays=pays, context=context))
+    # Pass the address and pays to the jinja2 prompt template
+    return template.render(address=address, pays=pays, context=context)
 
 # Call ChatGPT with the given prompt, asynchronously.
 async def call_chatgpt_async(session, prompt: str, api_key: str, model: str, max_retries=3):
@@ -131,7 +171,7 @@ async def call_chatgpt_bulk(prompts, api_key, model, api_call_func):
 
 def post_process_response(content):
     fields = content.split(';')
-    while len(fields) < 5:
+    while len(fields) < 4:
         fields.append("N/A")
     return tuple(field.strip() for field in fields[:5])
 
@@ -204,25 +244,25 @@ def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mar
             if set(val_pred) != set(val_corr):
                 is_all_true = False
                 break
-        pred_last = str(df_pred.iloc[idx, start_col + 4]).strip().lower()  # 5th field: yes/no
+        # pred_last = str(df_pred.iloc[idx, start_col + 4]).strip().lower()  # 5th field: yes/no
 
         if is_all_true:
             correct += 1
             df_pred.iloc[idx, mark_col] = 'V'
-            if pred_last == "oui" or pred_last == "yes":
-                right_yes += 1
-            elif pred_last == "non" or pred_last == "no":
-                right_no += 1
+            # if pred_last == "oui" or pred_last == "yes":
+            #     right_yes += 1
+            # elif pred_last == "non" or pred_last == "no":
+            #     right_no += 1
         else:
             wrong += 1
-            if pred_last == "non" or pred_last == "no":
-                df_pred.iloc[idx, mark_col] = 'D'
-                detected_wrong += 1
-                wrong_no += 1
-            else:
-                df_pred.iloc[idx, mark_col] = 'F'
-                undetected_wrong += 1
-                wrong_yes += 1
+            # if pred_last == "non" or pred_last == "no":
+            #     df_pred.iloc[idx, mark_col] = 'D'
+            #     detected_wrong += 1
+            #     wrong_no += 1
+            # else:
+            df_pred.iloc[idx, mark_col] = 'F'
+            undetected_wrong += 1
+            wrong_yes += 1
 
     accuracy = 100 * correct / n_rows if n_rows > 0 else 0
     true_negative = 100 * detected_wrong / wrong if wrong > 0 else 0
@@ -236,7 +276,9 @@ def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mar
     confidence_coverage = 100 * (right_yes+right_no) / n_rows if n_rows > 0 else 0  
 
 
-    return accuracy, true_negative, confidence_accuracy, confidence_coverage
+    # return accuracy, true_negative, confidence_accuracy, confidence_coverage
+    
+    return accuracy, true_negative, -1,-1
 
 def add_second_round_to_excel(row_indices, answers, df, start_col=12, mark_col=17):
     """Write second round results back to df using provided row indices order."""
@@ -249,17 +291,17 @@ def add_second_round_to_excel(row_indices, answers, df, start_col=12, mark_col=1
         df.at[key, df.columns[start_col + 4]] = confidence_score
     return df
 
-def second_round_detecting(df, context_col=9, concat_col=11, start_col=12, detect='non') -> list:
-    """Return lists of (row_indices, addresses, contexts) for rows with 'detect' in confidence col."""
+def second_round_detecting(df, pays_col=9, concat_col=11, start_col=12, detect='non') -> list:
+    """Return lists of (row_indices, addresses, pays) for rows with 'detect' in confidence col."""
     mask = df.iloc[:, start_col + 4].astype(str).str.contains(detect, na=False)
     sub = df[mask]
     keys = sub.index.tolist()
     addresses = sub.iloc[:, concat_col].tolist()
-    contexts = sub.iloc[:, context_col].tolist()
-    return keys, addresses, contexts
+    pays_liste = sub.iloc[:, pays_col].tolist()
+    return keys, addresses, pays_liste
 
-def second_round_processing(df, prompt_template, context_col=9, start_col=12):
-    keys, addresses, contexts = second_round_detecting(df, start_col=start_col, context_col=context_col)
+def second_round_processing(df, prompt_template, context:str,pays_col=9, start_col=12):
+    keys, addresses, pays_liste = second_round_detecting(df, start_col=start_col, pays_col=pays_col)
     if not keys:
         print("No addresses found for second round processing.")
         return df
@@ -267,7 +309,7 @@ def second_round_processing(df, prompt_template, context_col=9, start_col=12):
     with open(prompt_template, "r", encoding="utf-8") as f:
         prompt_template = Template(f.read().strip())
 
-    prompts = [build_prompt(address, context, prompt_template) for address, context in zip(addresses, contexts)]
+    prompts = [build_prompt(address, pays, context,prompt_template) for address, pays in zip(addresses, pays_liste)]
 
     processed_results = asyncio.run(call_chatgpt_bulk(prompts, API_KEY, FIRST_ROUND_MODEL, API_CALL_FUNC))
 
@@ -281,23 +323,26 @@ if __name__ == "__main__":
     # ----------- CONFIGURATION -----------
 
     with open('keys.json', 'r', encoding='utf-8') as f:
-        keys = json.load(f)
+        api_keys = json.load(f)
 
-    API_KEY = keys['mistral_api_key']  
+    with open('common_words.json', 'r', encoding='utf-8') as f:
+        keywords = json.load(f)
+
+    API_KEY = api_keys['mistral_api_key']  
     FIRST_ROUND_MODEL = "mistral-medium-latest"
-    SECOND_ROUND_MODEL = "magistral-medium-latest"
+    SECOND_ROUND_MODEL = "hi"
     API_CALL_FUNC = call_mistral_async
 
 
-    N_ROWS = 400 # Number of rows to process
+    N_ROWS = 20 # Number of rows to process
     INPUT_FILE = 'Adresses_test.xlsx'
-    FIRST_ROUND_PROMPT_FILE = 'prompt_4.j2'
+    FIRST_ROUND_PROMPT_FILE = 'prompt_6.j2'
     SECOND_ROUND_PROMPT_FILE = 'prompt2_1.j2'
     OUTPUT_FILE = 'Adresses_test.xlsx'
     CORRECT_FILE = 'Adresses_test_correct.xlsx'
     LOG_FILE = "asynchronus_requests_log.txt"
     START_COL = 12  # First column to edit (12=M)
-    UPDATE_LOG = True# Set to False to disable logging
+    UPDATE_LOG = True # Set to False to disable logging
 
     # ----------- WORKFLOW SELECTION -----------
     RUN_EXTRACTION = True
@@ -310,7 +355,7 @@ if __name__ == "__main__":
     # ----------- PIPELINE -----------
 
     if RUN_EXTRACTION:
-        prompts, df = extract_from_excel_and_build_prompt(INPUT_FILE, n_rows=N_ROWS, prompt_file=FIRST_ROUND_PROMPT_FILE)
+        prompts, df = extract_from_excel_and_build_prompt(INPUT_FILE, keywords, n_rows=N_ROWS, prompt_file=FIRST_ROUND_PROMPT_FILE)
     else:
         prompts, df = [], None
 
@@ -337,9 +382,16 @@ if __name__ == "__main__":
         end_time_2 = time.time()
         elapsed_time = elapsed_time + end_time_2 - start_time_2
 
-    if RUN_WRITE_OUTPUT and df is not None:
-        df.to_excel(OUTPUT_FILE, index=False, header=True, engine='openpyxl')
-
+if RUN_WRITE_OUTPUT and df is not None:
+    # Save DataFrame to Excel using xlwings
+    wb = xw.Book(OUTPUT_FILE)
+    sht = wb.sheets[0]
+    # Clear the sheet before writing
+    sht.clear()
+    # Write DataFrame starting at cell A1
+    sht.range("A1").options(index=False, header=True).value = df
+    wb.save()
+    wb.close()
 
     if RUN_COMPARE:
         accuracy, true_negative, confidence_accuracy, confidence_coverage = compare_with_correct(OUTPUT_FILE, CORRECT_FILE, len(prompts), start_col=START_COL)
