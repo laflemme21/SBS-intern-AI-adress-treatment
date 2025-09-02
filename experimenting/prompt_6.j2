@@ -1,6 +1,6 @@
 Tâche : Catégoriser une adresse postale selon 4 champs bien définis.
 
-Format de sortie (exactement 4 ';') :
+Format de sortie (exactement 3 ';') :
 Numéro et nom de la voie;Immeuble/bâtiment/résidence;Appartement/étage/escalier;Mention spéciale/lieu-dit
 
 Instructions :
@@ -9,7 +9,6 @@ Instructions :
 3. Si une catégorie est absente dans l'adresse, laisser le champ vide.
 4. Répondre uniquement par la chaîne formatée, sans explication.
 5. Si le contexte contient un mot-clé entre guillemets, ce mot doit être classé dans la catégorie précisée, sauf si cela contredit les règles ci-dessus.
-6. Toute information supplémentaire présente dans l'adresse doit être placée dans le champ Mention spéciale/lieu-dit.
 
 Contexte :
 - Pays : {{pays}}
@@ -27,5 +26,5 @@ Exemples :
 
 Adresse à traiter : {{address}}
 
-Le champ 1 (Numéro et nom de la voie) ne peut jamais être vide.
+A part le champ 1 (Numéro et nom de la voie), n'importe quel champ peut être vide.
 Ne répète aucun mot dans la réponse.

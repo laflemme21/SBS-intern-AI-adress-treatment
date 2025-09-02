@@ -8,8 +8,8 @@ import os
 from jinja2 import Template
 import json
 import xlwings as xw
-
-from mistral_API import call_mistral_async, send_batch_prompts  # Add this import at the top
+from batch_mistral_api import send_batch_prompts
+from mistral_API import  post_process_response,call_mistral_async
 
 # Function to extract addresses from an Excel file
 def extract_from_excel_and_build_prompt(file_path, keywords, prompt_file,n_rows=1, build_prompt_bool=True):
@@ -97,7 +97,6 @@ def build_prompt(address: str, pays: str, context: str, template: Template) -> s
     # Set pays to "FRANCE" if it is empty or NaN
     if not isinstance(pays, str) or pays.strip() == "":
         pays = "FRANCE"
-    print(template.render(address=address, pays=pays, context=context))
     # Pass the address and pays to the jinja2 prompt template
     return template.render(address=address, pays=pays, context=context)
 
@@ -141,6 +140,7 @@ async def call_chatgpt_async(session, prompt: str, api_key: str, model: str, max
                 return "N/A", "N/A", "N/A", "N/A", "N/A"  # Default values in case of an error
             # Extract the content and preprocess it immediately
             raw_content = response_json['choices'][0]['message']['content']
+            
             result = post_process_response(raw_content)
             # Ensure always 5 values
             if len(result) < 5:
@@ -168,12 +168,6 @@ async def call_chatgpt_bulk(prompts, api_key, model, api_call_func):
         tasks = [tg.create_task(api_call_func(session, prompt, api_key, model)) for prompt in prompts]
         responses = await asyncio.gather(*tasks)
     return responses
-
-def post_process_response(content):
-    fields = content.split(';')
-    while len(fields) < 4:
-        fields.append("N/A")
-    return tuple(field.strip() for field in fields[:5])
 
 def add_answers_to_excel(df, n_rows, responses, file_path,start_col=12):
     """
@@ -210,7 +204,7 @@ def add_answers_to_excel(df, n_rows, responses, file_path,start_col=12):
         existing_df.at[row_index, existing_df.columns[start_col + 4]] = confidence_score  # Add confidence score
     return existing_df
 
-def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mark_col=17):
+def compare_with_correct(file_predicted, file_correct, n_rows, start_col=13, mark_col=17):
     """
     Compare the predicted answers in file_predicted with the correct answers in file_correct.
     Returns the percentage of exact matches for the 4 columns (M, N, O, P by default).
@@ -238,8 +232,8 @@ def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mar
     for idx in range(n_rows):
         is_all_true = True
         for col in range(start_col, start_col + 4):
-            val_pred = str(df_pred.iloc[idx, col]).strip().lower().split(' ')
-            val_corr = str(df_corr.iloc[idx, col]).strip().lower().split()
+            val_pred = str(df_pred.iloc[idx, col-1]).strip().lower().split(' ')
+            val_corr = str(df_corr.iloc[idx, col]).strip().lower().split(' ')
             # Compare as sets so order doesn't matter, but all elements must match
             if set(val_pred) != set(val_corr):
                 is_all_true = False
@@ -277,8 +271,8 @@ def compare_with_correct(file_predicted, file_correct, n_rows, start_col=12, mar
 
 
     # return accuracy, true_negative, confidence_accuracy, confidence_coverage
-    
-    return accuracy, true_negative, -1,-1
+
+    return accuracy, -1, -1, -1
 
 def add_second_round_to_excel(row_indices, answers, df, start_col=12, mark_col=17):
     """Write second round results back to df using provided row indices order."""
@@ -329,25 +323,25 @@ if __name__ == "__main__":
         keywords = json.load(f)
 
     API_KEY = api_keys['mistral_api_key']  
-    FIRST_ROUND_MODEL = "mistral-medium-latest"
+    FIRST_ROUND_MODEL = "ft:mistral-medium-latest:5d5f2efb:20250901:69131c9a"
     SECOND_ROUND_MODEL = "hi"
     API_CALL_FUNC = call_mistral_async
 
 
     N_ROWS = 20 # Number of rows to process
-    INPUT_FILE = 'Adresses_test.xlsx'
-    FIRST_ROUND_PROMPT_FILE = 'prompt_6.j2'
+    INPUT_FILE = 'Adresses_test_correct.xlsx'
+    FIRST_ROUND_PROMPT_FILE = 'prompt_7.j2'
     SECOND_ROUND_PROMPT_FILE = 'prompt2_1.j2'
     OUTPUT_FILE = 'Adresses_test.xlsx'
     CORRECT_FILE = 'Adresses_test_correct.xlsx'
     LOG_FILE = "asynchronus_requests_log.txt"
-    START_COL = 12  # First column to edit (12=M)
+    START_COL = 13  # First column to edit (12=M)
     UPDATE_LOG = True # Set to False to disable logging
 
     # ----------- WORKFLOW SELECTION -----------
     RUN_EXTRACTION = True
-    RUN_ASYNC_FIRST_ROUND_AI = True
-    RUN_BATCH_FIRST_MISTRAL = False
+    RUN_ASYNC_FIRST_ROUND_AI = False
+    RUN_BATCH_FIRST_MISTRAL = True
     RUN_SECOND_ROUND_AI = False
     RUN_WRITE_OUTPUT = True
     RUN_COMPARE = True
@@ -366,14 +360,18 @@ if __name__ == "__main__":
         elapsed_time = end_time_1 - start_time_1
     elif RUN_BATCH_FIRST_MISTRAL and (not RUN_ASYNC_FIRST_ROUND_AI) and prompts:
         start_time_1 = time.time()    
-        processed_results = send_batch_prompts(prompts, API_KEY, FIRST_ROUND_MODEL)
+        processed_results = send_batch_prompts(
+    prompts,
+    API_KEY,
+    model=FIRST_ROUND_MODEL,
+    # chat_params={"temperature": 0.0}  # optional
+)
         end_time_1 = time.time()
         elapsed_time = end_time_1 - start_time_1
     else:
         processed_results = []
-
     if df is not None and processed_results:
-        df=add_answers_to_excel(df, len(prompts), processed_results, OUTPUT_FILE, start_col=START_COL)
+        df=add_answers_to_excel(df, len(prompts), processed_results, OUTPUT_FILE, start_col=START_COL-1)
         # Save the updated DataFrame back to the file, keeping all rows
 
     if (RUN_ASYNC_FIRST_ROUND_AI or RUN_BATCH_FIRST_MISTRAL) and RUN_SECOND_ROUND_AI and df is not None:

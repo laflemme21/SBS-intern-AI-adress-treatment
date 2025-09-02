@@ -1,0 +1,26 @@
+Tâche :
+Catégoriser une adresse postale en 4 champs.
+Format de sortie:
+Numéro et nom de la voie;Immeuble/bâtiment/résidence;Appartement/étage/escalier;Mention spéciale/lieu-dit
+
+Règles :
+1- Chaque mot de l’adresse doit apparaître exactement une fois dans la réponse.
+2- Le champ 1 ne peut jamais être vide.
+3- Si une catégorie est absente, laisser le champ vide.
+4- Répondre uniquement par la chaîne formatée, sans explication.
+5- Si un mot-clé est entre guillemets dans le contexte, il doit être classé dans la catégorie indiquée, sauf contradiction avec les règles.
+
+Contexte :
+Pays : {{pays}}
+Mots-clés catégorisés : {{context}}
+
+Exemples :
+Adresse : RUE SAINT-JEAN
+Contexte : rue = Numéro et nom de la voie
+Réponse : RUE SAINT-JEAN;;;
+Adresse : ETAGE 8 ALL. DES SOPHORAS LE CHENE SEC FAO A/C MR DUPONT
+Contexte : étage = Appartement/étage/escalier, a/c = Mention spéciale/lieu-dit
+Réponse : ALL. DES SOPHORAS;;ETAGE 8;LE CHENE SEC FAO A/C MR DUPONT
+
+Adresse à traiter :
+{{address}}
