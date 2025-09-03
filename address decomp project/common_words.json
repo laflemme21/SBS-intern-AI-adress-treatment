@@ -1,6 +1,6 @@
 {
     "Numéro et nom de la voie": [
-        "rue", "avenue", "boulevard", "allée",  "cours", "passage","place","quai",
+        "rue", "avenue", "boulevard", "allée",  "cours", "passage","quai","place",
         "route", "voie", "traverse", "sentier", "rampe", "chaussée", "square", "lane", "drive", "street",
         "road", "way", "court", "circle", "trail", "parkway", "loop", "via", "viale", "calle",
         "paseo", "camino", "carretera", "straat", "laan", "weg","SLAKWEIDESTRAAT", "Rd", "St"
@@ -9,7 +9,14 @@
         "immeuble",
         "batiment",
         "tour",
-        "building"
+        "building",
+        "hq",
+        "bat",
+        "house",
+        "center",
+        "cargo",
+        "terminal",
+        "lot"
     ],
     "Appartement/étage/escalier": [
         "floor",
@@ -55,8 +62,11 @@
         "lieu",
         "att.",
         "cp",
-        "b",
-        "p.o."
+        "p.o.",
+        "A/S",
+        "departement",
+        "business",
+        "plt"
 ,
     "hameau",
     "écart",
@@ -89,7 +99,8 @@
     "z.i.",
     "z.a.",
     "z.a.e.",
-    "wharf"
+    "wharf",
+    "postale"
 
     ]
 

@@ -14,7 +14,11 @@ def extract_columns_from_excel(file_path, columns):
         pd.DataFrame: DataFrame containing only the specified columns
     """
     try:
-        df = pd.read_excel(file_path, engine='openpyxl')
+        
+        if file_path.endswith(".xlsx"):
+            df = pd.read_excel(file_path, engine='calamine')
+        elif file_path.endswith(".csv"):
+            df = pd.read_csv(file_path, header=0, dtype=str, encoding='utf-8-sig',delimiter=';')
         # Check if all specified columns exist
         for col in columns:
             if col not in df.columns:
@@ -64,12 +68,12 @@ def compare_word_sets(df, unique_col, list_cols):
         list_cols (list): List of column names to aggregate and compare with
         
     Returns:
-        pd.DataFrame: Rows that satisfy all comparison criteria
+        int: number of rows that satisfy all comparison criteria
     """
     # Validate columns exist
     if unique_col not in df.columns:
         print(f"Column '{unique_col}' not found in DataFrame")
-        return pd.DataFrame()
+        return 0
     
     valid_list_cols = [col for col in list_cols if col in df.columns]
     if len(valid_list_cols) < len(list_cols):
@@ -79,22 +83,23 @@ def compare_word_sets(df, unique_col, list_cols):
     def extract_words(text):
         if pd.isna(text):
             return []
-        return re.findall(r'\b\w+\b', str(text).lower())
+        return re.findall(r'\b\w+\b', str(text))
     
     # Process each row
     matching_indices = []
-    for idx, row in df.iterrows():
+    unmatching_indices = []
+    for idx, row in pd.DataFrame(df).iterrows():
         # Get words from the unique column
         unique_words = extract_words(row[unique_col])
         unique_word_counts = {word: unique_words.count(word) for word in set(unique_words)}
-        
+
         # Get words from all list columns combined
         combined_words = []
         for col in valid_list_cols:
             combined_words.extend(extract_words(row[col]))
-        
+
         combined_word_counts = {word: combined_words.count(word) for word in set(combined_words)}
-        
+
         # Check all criteria
         match = True
         
@@ -102,20 +107,26 @@ def compare_word_sets(df, unique_col, list_cols):
         for word, count in unique_word_counts.items():
             if word not in combined_word_counts or combined_word_counts[word] != count:
                 match = False
+                unmatching_indices.append(idx)
                 break
-        
+        if not match:
+            continue
         # Check if combined has any extra words
         for word in combined_word_counts:
             if word not in unique_word_counts:
                 match = False
+                unmatching_indices.append(idx)
                 break
         
         if match:
             matching_indices.append(idx)
-    
-    return df.loc[matching_indices]
 
-def all_columns_keyword_check(df, list_of_keywords, list_of_columns):
+    if len(unmatching_indices) + len(matching_indices) != len(df):
+        print("ATTENTION: Some rows weren't checked or repeated")
+
+    return len(matching_indices),unmatching_indices
+
+def all_columns_keyword_check(df, list_of_keywords, list_of_columns,n):
     """
     Check if any of the keywords are present in all specified columns of the DataFrame.
     if a key word is specified in a columns from the same index as the list it belongs to, 
@@ -138,8 +149,6 @@ def all_columns_keyword_check(df, list_of_keywords, list_of_columns):
                 right_keywords += mask.sum()
                 if mask.any():
                     right_indices.extend(df[mask].index.tolist())
-                    print(f"Rows containing '{keyword}' in column '{column}':")
-                    print(df[mask][column])
         else:
             print(f"Column '{column}' not found in DataFrame")
             return None
@@ -155,11 +164,11 @@ def all_columns_keyword_check(df, list_of_keywords, list_of_columns):
                     mask = df[column].astype(str).str.lower().str.contains(pattern, regex=True, na=False)
                     wrong_keywords += mask.sum()
                     if mask.any():
-                        wrong_indices.extend(df[mask].index.tolist())
+                        wrong_indices.extend((df[mask].index.tolist(),keyword))
 
     # Print the index of the first 10 right and wrong addresses
-    print("First 10 indices of right addresses:", right_indices[:10])
-    print("First 10 indices of wrong addresses:", wrong_indices[:10])
+    # print("First 10 indices of right addresses:", right_indices[:10])
+    print(f"First {n} keywords wrongly placed, with indices:", wrong_indices[:n*2])
 
     return right_keywords, wrong_keywords
 
@@ -170,21 +179,34 @@ if __name__ == "__main__":
     with open('common_words.json', 'r', encoding='utf-8') as f:
         common_words = json.load(f)
 
-    columns=['Numero de voie et voie','immeuble residence','Appartement / etage','mention speciale / lieu dit']
-    number_of_rows = 400
+    columns=['Adresse concat','Numero de voie et voie','immeuble residence','Appartement / etage','mention speciale / lieu dit']
+    number_of_rows = 60
 
     # Extract data from Excel
-    df = extract_columns_from_excel('Adresses_test.xlsx', columns)
+    df = extract_columns_from_excel('ministral-400-answers.csv', columns)
 
     # keep the number of rows specified
     df = df.head(number_of_rows)
 
-    # keep only rows that have two or more non empty cells
-    df = df[df.notna().sum(axis=1) >= 2]
+    # Strip all cells before checking for non-empty cells
+    df = df.map(lambda x: x.strip() if isinstance(x, str) else x)
+    # Replace cells that are empty strings (after stripping) with NaN
+    df = df.replace('', pd.NA)
+
+    # keep only rows that have one or more non empty cells
+    df = df[df.notna().sum(axis=1) >= 1]
 
     number_of_non_empty_cells = df.notna().sum().sum()
     # Check for specific keywords in columns, and get the number of matches in the right and wrong columns
-    right_columns,wrong_columns = all_columns_keyword_check(df, list(common_words.values()), columns)
+    keyword_columns=columns[1:]
+    right_columns,wrong_columns = all_columns_keyword_check(df, list(common_words.values()), keyword_columns,5)
     print(f"Found {right_columns} rows with keywords in the right columns, percentage of right: {right_columns/(right_columns+wrong_columns)*100:.2f}%")
     print(f"Found {wrong_columns} rows with keywords in the wrong columns, percentage of wrong: {wrong_columns/(wrong_columns+right_columns)*100:.2f}%")
-    print(f"Percentage of cells with keywords: {(right_columns+wrong_columns)/(number_of_non_empty_cells)*100:.2f}%")
+    print(f"Percentage of non empty cells with keywords: {(right_columns+wrong_columns)/(number_of_non_empty_cells)*100:.2f}%")
+
+    num_of_complete_matches, unmatching_indices = compare_word_sets(df,'Adresse concat' , ['Numero de voie et voie','immeuble residence', 'Appartement / etage', 'mention speciale / lieu dit'])
+
+    print(f"Indices of unmatching rows: {unmatching_indices} len: {len(unmatching_indices)}")
+    print(f"Number of rows where all words match exactly: {num_of_complete_matches} out of {len(df)} ({num_of_complete_matches/len(df)*100:.2f}%)")
+
+

@@ -196,12 +196,11 @@ def add_answers_to_excel(df, n_rows, responses, file_path,start_col=12):
 
     # Update only the rows that were processed
     for idx, (row_index, _) in enumerate(df.head(n_rows).iterrows()):
-        numero_voie, immeuble_residence, etage_appartement, mention_speciale, confidence_score = responses[idx]
+        numero_voie, immeuble_residence, etage_appartement, mention_speciale = responses[idx]
         existing_df.at[row_index, existing_df.columns[start_col]] = numero_voie
         existing_df.at[row_index, existing_df.columns[start_col + 1]] = immeuble_residence
         existing_df.at[row_index, existing_df.columns[start_col + 2]] = etage_appartement
-        existing_df.at[row_index, existing_df.columns[start_col + 3]] = mention_speciale
-        existing_df.at[row_index, existing_df.columns[start_col + 4]] = confidence_score  # Add confidence score
+        existing_df.at[row_index, existing_df.columns[start_col + 3]] = mention_speciale # Add confidence score
     return existing_df
 
 def compare_with_correct(file_predicted, file_correct, n_rows, start_col=13, mark_col=17):
@@ -323,7 +322,7 @@ if __name__ == "__main__":
         keywords = json.load(f)
 
     API_KEY = api_keys['mistral_api_key']  
-    FIRST_ROUND_MODEL = "ft:mistral-medium-latest:5d5f2efb:20250901:69131c9a"
+    FIRST_ROUND_MODEL = "ft:ministral-8b-latest:5d5f2efb:20250902:79156560"
     SECOND_ROUND_MODEL = "hi"
     API_CALL_FUNC = call_mistral_async
 

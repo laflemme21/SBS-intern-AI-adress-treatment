@@ -1,13 +1,7 @@
 import pandas as pd
-import asyncio
-import aiohttp
-import ssl
-import certifi
 import time 
-import os
 from jinja2 import Template
 import json
-import xlwings as xw
 from batch_mistral_api import send_batch_prompts
 
 def open_file(file_path,first_col,last_col,n_rows):
@@ -94,12 +88,20 @@ def accuracy_calc(df,answers):
     )
     true=0
     false=0
+    answer_bool=[]
     for i in range(len(answers)):
         if is_answer_true(answers[i], correct_comparaisons[i]):
             true += 1
+            answer_bool.append("V")
         else:
             false += 1
-    return 100*true/(true+false)
+            answer_bool.append("F")
+    return 100*true/(true+false),answer_bool
+
+def log_answers(answers,adresses, ans_corr,log_file):
+    with open(log_file, "w", encoding="utf-8-sig") as f:
+        for answer, adresse, corr in zip(answers, adresses, ans_corr):
+            f.write(f"{adresse}; {answer}; {corr}\n")
 
 def main():
     
@@ -110,13 +112,17 @@ def main():
 
     CORRECT_FILE = "Adresses_test_correct.xlsx"
     N_LINES = 100
-    MODEL = "ministral-8b-latest"
+    MODEL = "ft:ministral-8b-latest:5d5f2efb:20250902:79156560"
 
     PROMPT_FILE = "prompt_7.j2"
     API_KEYS = api_keys["mistral_api_key"]
-    LOG_FILE = "asynchronus_requests_log.txt"
+    LOG_FILE = "batch_log.txt"
+    ANSWERS_LOG_FILE = "ministral-400-"+"answers.csv"
 
-    df = pd.read_excel(CORRECT_FILE, engine='calamine')
+    if CORRECT_FILE.endswith(".xlsx"):
+        df = pd.read_excel(CORRECT_FILE, engine='calamine')
+    elif CORRECT_FILE.endswith(".csv"):
+        df = pd.read_csv(CORRECT_FILE, header=0, dtype=str, encoding='utf-8-sig',delimiter=';')
     df = df.loc[:N_LINES-1, :]
 
     start_time = time.time()
@@ -126,7 +132,9 @@ def main():
     end_time = time.time()
     elapsed_time = end_time - start_time
 
-    accuracy = accuracy_calc(df, answers)
+    accuracy ,answers_corr= accuracy_calc(df, answers)
+    log_answers(answers, df['Adresse concat'], answers_corr,ANSWERS_LOG_FILE)
+
 
     with open(LOG_FILE, "a", encoding="utf-8") as f:
         f.write(f"Rows processed: {len(prompts)}, Model: {MODEL}")

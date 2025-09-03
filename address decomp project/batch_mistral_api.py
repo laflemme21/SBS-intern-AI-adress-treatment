@@ -1,6 +1,11 @@
-import json, uuid, time, math, os, itertools, random
+import json, uuid, time, os, random
 import httpx
 from typing import List, Dict, Any, Optional, Tuple
+import json
+import os
+import random
+import string
+
 # Reuse your existing post_process_response
 
 class MistralBatchError(Exception):
@@ -23,7 +28,7 @@ def _build_jsonl_lines(
             },
         }
 
-def _write_temp_jsonl(objs) -> str:
+def write_temp_jsonl(objs) -> str:
     path = f"batch_{uuid.uuid4().hex}.jsonl"
     with open(path, "w", encoding="utf-8") as f:
         for obj in objs:
@@ -142,7 +147,7 @@ def send_batch_prompts(
             sub_prompts = prompts[start:start + batch_size]
             # Build JSONL lines
             lines_iter = list(_build_jsonl_lines(sub_prompts, url_path, chat_params, start_index=start))
-            tmp_path = _write_temp_jsonl(lines_iter)
+            tmp_path = write_temp_jsonl(lines_iter)
 
             # 1) Upload file
             with open(tmp_path, "rb") as fh:
@@ -197,3 +202,4 @@ def send_batch_prompts(
         return ordered
     finally:
         client.close()
+
