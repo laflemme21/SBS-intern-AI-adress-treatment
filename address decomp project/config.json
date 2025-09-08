@@ -1,0 +1,42 @@
+{"parameters": 
+    {
+        "api_key": "################################ ",
+        "mistral_model": "ft:ministral-8b-latest:5d5f2efb:20250902:79156560",
+        "mots_cles_file": "common_words.json",
+        "postal_code_file": "postal_codes.csv",
+        "ville_file": "cities.csv",
+        "input_file": "Adresses_test_correct.xlsx",
+        "concat_column": "full_address",
+        "pays_column": "country",
+        "ville_column": "city",
+        "code_postal_column": "postal_code",
+        "output_file": "ministral-400-answers.csv",
+        "prompt_file": "prompt_7.j2",
+        "n_lines_process": 20,
+        "statistics_log_file":"batch_log.txt",
+        "file_to_check":"ministral-400-answers.csv",
+        "batch_ans_file":"ministral-400-answers.csv",
+        "grading_weights": {
+            "lengths": [0.2, 0.1, 0.1, 0.1],
+            "keywords": 0.5,
+            "rue_starts_number": 0.6,
+            "etage_contains_number": 0.4,
+            "lieu_dit_contains_number": 0.2,
+            "exact_word_match": 2.0
+        }
+
+    },
+
+
+"functions":    
+    {
+        "use_mistral": true,
+        "build_prompts": true,
+        "log_statistics": true,
+        "save_answers": true,
+        "check_postal_code": true,
+        "check_ville": true,
+        "check_file": false,
+        "parse_and_save_batch_ans_file": true
+    }
+}

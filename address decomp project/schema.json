@@ -1,0 +1,71 @@
+{
+  "type": "object",
+  "properties": {
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "api_key": { "type": "string" },
+        "mistral_model": { "type": "string" },
+        "mots_cles_file": { "type": "string" },
+        "postal_code_file": { "type": "string" },
+        "ville_file": { "type": "string" },
+        "input_file": { "type": "string" },
+        "concat_column": { "type": "string" },
+        "pays_column": { "type": "string" },
+        "ville_column": { "type": "string" },
+        "code_postal_column": { "type": "string" },
+        "output_file": { "type": "string" },
+        "output_columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "prompt_file": { "type": "string" },
+        "n_lines_process": { "type": "integer" },
+        "statistics_log_file": { "type": "string" },
+        "file_to_check": { "type": "string" },
+        "batch_ans_file": { "type": "string" }
+      },
+      "required": [
+        "api_key",
+        "mistral_model",
+        "mots_cles_file",
+        "postal_code_file",
+        "ville_file",
+        "input_file",
+        "concat_column",
+        "pays_column",
+        "ville_column",
+        "code_postal_column",
+        "output_file",
+        "output_columns",
+        "prompt_file",
+        "n_lines_process",
+        "statistics_log_file",
+        "file_to_check",
+        "batch_ans_file"
+      ]
+    },
+    "functions": {
+      "type": "object",
+      "properties": {
+        "use_mistral": { "type": "boolean" },
+        "check_postal_code": { "type": "boolean" },
+        "check_ville": { "type": "boolean" },
+        "save_answers": { "type": "boolean" },
+        "log_statistics": { "type": "boolean" },
+        "check_file": { "type": "boolean" },
+        "parse_and_save_batch_ans_file": { "type": "boolean" }
+      },
+      "required": [
+        "use_model",
+        "check_postal_code",
+        "check_ville",
+        "save_answers",
+        "log_statistics",
+        "check_file",
+        "parse_and_save_batch_ans_file"
+      ]
+    }
+  },
+  "required": ["parameters", "functions"]
+}

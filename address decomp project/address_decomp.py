@@ -3,6 +3,7 @@ import time
 from jinja2 import Template
 import json
 from batch_mistral_api import send_batch_prompts
+from jsonschema import validate, ValidationError
 
 def open_file(file_path,first_col,last_col,n_rows):
     """
@@ -104,44 +105,60 @@ def log_answers(answers,adresses, ans_corr,log_file):
             f.write(f"{adresse}; {answer}; {corr}\n")
 
 def main():
-    
-    with open('keys.json', 'r', encoding='utf-8') as f:
-        api_keys = json.load(f)
-    with open('common_words.json', 'r', encoding='utf-8') as f:
+
+    with open('config.json', 'r', encoding='utf-8') as f, open('schema.json', 'r', encoding='utf-8') as v:
+        config = json.load(f)
+        schema = json.load(v)
+        validate(instance=config, schema=schema)
+        params = config.get("parameters", {})
+        functions = config.get("functions", {})
+
+    with open(params.get("mots_cles_file", ""), 'r', encoding='utf-8') as f:
         keywords = json.load(f)
 
-    CORRECT_FILE = "Adresses_test_correct.xlsx"
-    N_LINES = 100
-    MODEL = "ft:ministral-8b-latest:5d5f2efb:20250902:79156560"
+    INPUT_FILE = params.get("input_file", "")
+    N_LINES = params.get("n_lines", 0)
+    MODEL = params.get("model", "")
 
-    PROMPT_FILE = "prompt_7.j2"
-    API_KEYS = api_keys["mistral_api_key"]
-    LOG_FILE = "batch_log.txt"
-    ANSWERS_LOG_FILE = "ministral-400-"+"answers.csv"
+    PROMPT_FILE = params.get("prompt_file", "")
+    API_KEYS = params.get("api_keys", [])
+    LOG_FILE = params.get("log_file", "")
+    OUTPUT_FILE = params.get("output_file", "")
 
-    if CORRECT_FILE.endswith(".xlsx"):
-        df = pd.read_excel(CORRECT_FILE, engine='calamine')
-    elif CORRECT_FILE.endswith(".csv"):
-        df = pd.read_csv(CORRECT_FILE, header=0, dtype=str, encoding='utf-8-sig',delimiter=';')
-    df = df.loc[:N_LINES-1, :]
+    if INPUT_FILE.endswith(".xlsx"):
+        df = pd.read_excel(INPUT_FILE, engine='calamine')
+    elif INPUT_FILE.endswith(".csv"):
+        df = pd.read_csv(INPUT_FILE, header=0, dtype=str, encoding='utf-8-sig',delimiter=';')
 
-    start_time = time.time()
-    prompts = build_all_prompts(PROMPT_FILE, addresses=df['Adresse concat'], pays_liste=df['ADRESSPAY'], keywords=keywords)
+    if N_LINES >= 0:
+        df = df.head(N_LINES)
 
-    answers = send_batch_prompts(prompts, API_KEYS, MODEL)
-    end_time = time.time()
-    elapsed_time = end_time - start_time
+    if functions.get("log_statistics", False):
+        start_time = time.time()
 
-    accuracy ,answers_corr= accuracy_calc(df, answers)
-    log_answers(answers, df['Adresse concat'], answers_corr,ANSWERS_LOG_FILE)
+    if functions.get("build_prompts", False):
+        prompts = build_all_prompts(PROMPT_FILE, addresses=df['Adresse concat'], pays_liste=df['ADRESSPAY'], keywords=keywords)
+    
+    if functions.get("use_model", False):
+        answers = send_batch_prompts(prompts, API_KEYS, MODEL)
 
+    if functions.get("log_statistics", False):
+        end_time = time.time()
+        elapsed_time = end_time - start_time
 
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
-        f.write(f"Rows processed: {len(prompts)}, Model: {MODEL}")
-        f.write(f", Time: {elapsed_time:.2f} seconds, Prompt: {PROMPT_FILE}\n")
-        if accuracy is not None:
-            f.write(f"accuracy: {accuracy:.2f}%, ")
-        f.write("\n\n")
+    if functions.get("save_answers", False) or functions.get("log_statistics", False):
+        accuracy ,answers_corr= accuracy_calc(df, answers)
+
+    if functions.get("save_answers", False):
+        log_answers(answers, df['Adresse concat'], answers_corr,OUTPUT_FILE)
+
+    if functions.get("log_statistics", False):
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(f"Rows processed: {len(prompts)}, Model: {MODEL}")
+            f.write(f", Time: {elapsed_time:.2f} seconds, Prompt: {PROMPT_FILE}\n")
+            if accuracy is not None:
+                f.write(f"accuracy: {accuracy:.2f}%, ")
+            f.write("\n\n")
 
 if __name__ == "__main__":
     main()

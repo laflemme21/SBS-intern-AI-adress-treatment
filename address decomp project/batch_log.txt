@@ -46,3 +46,6 @@ accuracy: 54.00%,
 Rows processed: 400, Model: ministral-8b-latest, Time: 26.53 seconds, Prompt: prompt_7.j2
 accuracy: 59.75%, 
 
+Rows processed: 100, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 24.46 seconds, Prompt: prompt_7.j2
+accuracy: 87.00%, 
+
