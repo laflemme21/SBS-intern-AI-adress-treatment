@@ -28,8 +28,9 @@ def _build_jsonl_lines(
             },
         }
 
-def write_temp_jsonl(objs) -> str:
-    path = f"batch_{uuid.uuid4().hex}.jsonl"
+def write_temp_jsonl(objs,path=None) -> str:
+    if path is None:
+        path = f"batch_{uuid.uuid4().hex}.jsonl"
     with open(path, "w", encoding="utf-8") as f:
         for obj in objs:
             f.write(json.dumps(obj, ensure_ascii=False) + "\n")

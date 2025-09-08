@@ -49,3 +49,39 @@ accuracy: 59.75%,
 Rows processed: 100, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 24.46 seconds, Prompt: prompt_7.j2
 accuracy: 87.00%, 
 
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.42 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.74 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.45 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.38 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.42 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.14 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 11.69 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 20, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.81 seconds, Prompt: prompt_7.j2
+accuracy: 90.00%, 
+
+Rows processed: 25, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 11.68 seconds, Prompt: prompt_7.j2
+accuracy: 92.00%, 
+
+Rows processed: 25, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.64 seconds, Prompt: prompt_7.j2
+accuracy: 92.00%, 
+
+Rows processed: 25, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 12.12 seconds, Prompt: prompt_7.j2
+accuracy: 92.00%, 
+
+Rows processed: 25, Model: ft:ministral-8b-latest:5d5f2efb:20250902:79156560, Time: 5.78 seconds, Prompt: prompt_7.j2
+accuracy: 92.00%, 
+

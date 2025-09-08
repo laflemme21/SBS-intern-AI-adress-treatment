@@ -1,4 +1,4 @@
-{"parameters": 
+{"ai_parameters": 
     {
         "api_key": "################################ ",
         "mistral_model": "ft:ministral-8b-latest:5d5f2efb:20250902:79156560",
@@ -6,16 +6,26 @@
         "postal_code_file": "postal_codes.csv",
         "ville_file": "cities.csv",
         "input_file": "Adresses_test_correct.xlsx",
-        "concat_column": "full_address",
-        "pays_column": "country",
-        "ville_column": "city",
-        "code_postal_column": "postal_code",
+        "columns": ["Adresse concat", "Numero de voie et voie", "immeuble residence", "Appartement / etage", "mention speciale / lieu dit"],
+        "concat_column": "Adresse concat",
+        "pays_column": "ADRESSPAY",
+        "ville_column": "ADRESSVIL",
+        "code_postal_column": "ADRESSCOP",
         "output_file": "ministral-400-answers.csv",
         "prompt_file": "prompt_7.j2",
-        "n_lines_process": 20,
+        "n_lines_process": 30,
         "statistics_log_file":"batch_log.txt",
-        "file_to_check":"ministral-400-answers.csv",
-        "batch_ans_file":"ministral-400-answers.csv",
+        "save_prompts_file":"saved_prompts.jsonl",
+        "batch_ans_file": "5d4d8e99-6a1b-44be-92a6-3a3abd618c79.jsonl"
+
+    },
+"verification_parameters":
+    {   
+        "input_file": "ministral-400-answers.csv",
+        "mots_cles_file": "common_words.json",
+        "columns": ["Adresse concat", "Numero de voie et voie", "immeuble residence", "Appartement / etage", "mention speciale / lieu dit"],
+        "number_of_rows": -1,
+        "output_file": "verification_results.xlsx",
         "grading_weights": {
             "lengths": [0.2, 0.1, 0.1, 0.1],
             "keywords": 0.5,
@@ -23,20 +33,21 @@
             "etage_contains_number": 0.4,
             "lieu_dit_contains_number": 0.2,
             "exact_word_match": 2.0
-        }
-
+        },
+        "min_length": 3,
+        "max_length": 50
     },
 
 
 "functions":    
     {
-        "use_mistral": true,
-        "build_prompts": true,
-        "log_statistics": true,
-        "save_answers": true,
-        "check_postal_code": true,
-        "check_ville": true,
-        "check_file": false,
-        "parse_and_save_batch_ans_file": true
+        "use_mistral": false,
+        "save_prompts": false,
+        "log_statistics": false,
+        "save_answers": false,
+        "check_postal_code": false,
+        "check_ville": false,
+        "parse_and_save_batch_ans_file": false,
+        "calculate_conf_score": true
     }
 }

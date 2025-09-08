@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 import json
+from jsonschema import validate
 
 def extract_columns_from_excel(file_path, columns):
     """
@@ -147,7 +148,7 @@ def field_length_check(row, columns, min_lengths,max_lengths,weights):
 
     return total_weight
 
-def grade_calculation(df, columns, common_words, weights):
+def grade_calculation(df, columns, common_words, weights,min_lengths=3,max_lengths=50):
     """
     Calculate a confidence score for each row based on multiple characteristics.
     
@@ -166,7 +167,7 @@ def grade_calculation(df, columns, common_words, weights):
         # Check for keywords in the specified columns
         grades[i] += row_keyword_check(df.iloc[i], weights['keywords'], columns[1:], common_words)
         # Field length check
-        grades[i] += field_length_check(df.iloc[i], columns[1:], 3,50,weights['lengths'])
+        grades[i] += field_length_check(df.iloc[i], columns[1:], min_lengths,max_lengths,weights['lengths'])
         # Check if the rue column starts with a number
         grades[i] += first_column_starts_number_check(df.iloc[i], columns[1], weights['rue_starts_number'])
         # Check if the column etage contains a number
@@ -289,18 +290,16 @@ def compare_word_sets_row(row, unique_col, list_cols, weight):
 
     return weight if match else 0
 
-# Example usage (uncomment to test)
-if __name__ == "__main__":
-    # Load keywords from JSON file
-    with open('common_words.json', 'r', encoding='utf-8') as f:
+def verification_main(verification_parameters):
+    with open(verification_parameters["mots_cles_file"], 'r', encoding='utf-8') as f:
         common_words = json.load(f)
 
-    columns=['Adresse concat', 'Numero de voie et voie', 'immeuble residence', 'Appartement / etage', 'mention speciale / lieu dit']
-    number_of_rows = 1400
-    OUTPUT_FILE = "verification_results.csv"
+    columns=verification_parameters["columns"]
+    number_of_rows = verification_parameters["number_of_rows"]
+    OUTPUT_FILE = verification_parameters["output_file"]
 
     # Extract data from Excel
-    df = extract_columns_from_excel('Adresses_test_correct.xlsx', columns)
+    df = extract_columns_from_excel(verification_parameters["input_file"], columns)
 
     # keep the number of rows specified
     if number_of_rows >= 0:
@@ -316,16 +315,17 @@ if __name__ == "__main__":
 
     number_of_non_empty_cells = df.notna().sum().sum()
 
-    grades= grade_calculation(df, columns, common_words, {'lengths':[0.2,0.1,0.1,0.1],
-                                                          'keywords':0.5,
-                                                          'rue_starts_number':0.6,
-                                                          'etage_contains_number':0.4,
-                                                          'lieu_dit_contains_number':0.2,
-                                                          'exact_word_match':2.0})
+    grades= grade_calculation(df, columns, common_words, verification_parameters["grading_weights"],verification_parameters["min_length"],verification_parameters["max_length"])
     df['confidence score'] = [f"{grade:.2f}" for grade in grades]
     if OUTPUT_FILE.endswith(".xlsx"):
         df.to_excel(OUTPUT_FILE, index=False)
     elif OUTPUT_FILE.endswith(".csv"):
         df.to_csv(OUTPUT_FILE, index=False, sep=';')
 
-
+if __name__ == "__main__":
+    with open('config.json', 'r', encoding='utf-8') as f, open('schema.json', 'r', encoding='utf-8') as v:
+        config = json.load(f)
+        schema = json.load(v)
+        validate(instance=config, schema=schema)
+        verification_parameters = config.get("verification_parameters", {})
+    verification_main(verification_parameters)

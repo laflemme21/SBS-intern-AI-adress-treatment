@@ -1,7 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "parameters": {
+    "ai_parameters": {
       "type": "object",
       "properties": {
         "api_key": { "type": "string" },
@@ -10,19 +10,19 @@
         "postal_code_file": { "type": "string" },
         "ville_file": { "type": "string" },
         "input_file": { "type": "string" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "concat_column": { "type": "string" },
         "pays_column": { "type": "string" },
         "ville_column": { "type": "string" },
         "code_postal_column": { "type": "string" },
         "output_file": { "type": "string" },
-        "output_columns": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
         "prompt_file": { "type": "string" },
         "n_lines_process": { "type": "integer" },
         "statistics_log_file": { "type": "string" },
-        "file_to_check": { "type": "string" },
+        "save_prompts_file": { "type": "string" },
         "batch_ans_file": { "type": "string" }
       },
       "required": [
@@ -32,40 +32,89 @@
         "postal_code_file",
         "ville_file",
         "input_file",
+        "columns",
         "concat_column",
         "pays_column",
         "ville_column",
         "code_postal_column",
         "output_file",
-        "output_columns",
         "prompt_file",
         "n_lines_process",
         "statistics_log_file",
-        "file_to_check",
+        "save_prompts_file",
         "batch_ans_file"
+      ]
+    },
+    "verification_parameters": {
+      "type": "object",
+      "properties": {
+        "input_file": { "type": "string" },
+        "mots_cles_file": { "type": "string" },
+        "columns": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "number_of_rows": { "type": "integer" },
+        "output_file": { "type": "string" },
+        "grading_weights": {
+          "type": "object",
+          "properties": {
+            "lengths": {
+              "type": "array",
+              "items": { "type": "number" }
+            },
+            "keywords": { "type": "number" },
+            "rue_starts_number": { "type": "number" },
+            "etage_contains_number": { "type": "number" },
+            "lieu_dit_contains_number": { "type": "number" },
+            "exact_word_match": { "type": "number" }
+          },
+          "required": [
+            "lengths",
+            "keywords",
+            "rue_starts_number",
+            "etage_contains_number",
+            "lieu_dit_contains_number",
+            "exact_word_match"
+          ]
+        },
+        "min_length": { "type": "integer" },
+        "max_length": { "type": "integer" }
+      },
+      "required": [
+        "input_file",
+        "mots_cles_file",
+        "columns",
+        "number_of_rows",
+        "output_file",
+        "grading_weights",
+        "min_length",
+        "max_length"
       ]
     },
     "functions": {
       "type": "object",
       "properties": {
         "use_mistral": { "type": "boolean" },
+        "save_prompts": { "type": "boolean" },
+        "log_statistics": { "type": "boolean" },
+        "save_answers": { "type": "boolean" },
         "check_postal_code": { "type": "boolean" },
         "check_ville": { "type": "boolean" },
-        "save_answers": { "type": "boolean" },
-        "log_statistics": { "type": "boolean" },
-        "check_file": { "type": "boolean" },
-        "parse_and_save_batch_ans_file": { "type": "boolean" }
+        "parse_and_save_batch_ans_file": { "type": "boolean" },
+        "calculate_conf_score": { "type": "boolean" }
       },
       "required": [
-        "use_model",
+        "use_mistral",
+        "save_prompts",
+        "log_statistics",
+        "save_answers",
         "check_postal_code",
         "check_ville",
-        "save_answers",
-        "log_statistics",
-        "check_file",
-        "parse_and_save_batch_ans_file"
+        "parse_and_save_batch_ans_file",
+        "calculate_conf_score"
       ]
     }
   },
-  "required": ["parameters", "functions"]
+  "required": ["ai_parameters", "verification_parameters", "functions"]
 }

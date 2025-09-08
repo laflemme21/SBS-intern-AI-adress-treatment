@@ -2,7 +2,7 @@ import pandas as pd
 import time 
 from jinja2 import Template
 import json
-from batch_mistral_api import send_batch_prompts
+from batch_mistral_api import _download_output_lines, send_batch_prompts,write_temp_jsonl,_build_jsonl_lines,_extract_content_from_item
 from jsonschema import validate, ValidationError
 
 def open_file(file_path,first_col,last_col,n_rows):
@@ -89,70 +89,99 @@ def accuracy_calc(df,answers):
     )
     true=0
     false=0
-    answer_bool=[]
     for i in range(len(answers)):
         if is_answer_true(answers[i], correct_comparaisons[i]):
             true += 1
-            answer_bool.append("V")
         else:
             false += 1
-            answer_bool.append("F")
-    return 100*true/(true+false),answer_bool
+    return 100*true/(true+false)
 
-def log_answers(answers,adresses, ans_corr,log_file):
-    with open(log_file, "w", encoding="utf-8-sig") as f:
-        for answer, adresse, corr in zip(answers, adresses, ans_corr):
-            f.write(f"{adresse}; {answer}; {corr}\n")
+def log_answers(answers, adresses, log_file, columns: list[str,str,str,str]):
+    # answers: List[List[str]], each inner list has 4 elements
+    answers = [ans.split(";") for ans in answers]
+    # Transpose answers to get columns
+    answers_T = list(zip(*answers))
 
-def main():
+    # Prepare DataFrame for output
+    df_out = pd.DataFrame({
+        columns[0]: adresses,
+        columns[1]: answers_T[0],
+        columns[2]: answers_T[1],
+        columns[3]: answers_T[2],
+        columns[4]: answers_T[3]
+    })
 
-    with open('config.json', 'r', encoding='utf-8') as f, open('schema.json', 'r', encoding='utf-8') as v:
-        config = json.load(f)
-        schema = json.load(v)
-        validate(instance=config, schema=schema)
-        params = config.get("parameters", {})
-        functions = config.get("functions", {})
 
-    with open(params.get("mots_cles_file", ""), 'r', encoding='utf-8') as f:
+    # Write to CSV or Excel depending on file extension
+    if log_file.endswith(".csv"):
+        df_out.to_csv(log_file, sep=";", index=False, encoding="utf-8-sig")
+    elif log_file.endswith(".xlsx"):
+        df_out.to_excel(log_file, index=False)
+    else:
+        # Fallback to CSV
+        df_out.to_csv(log_file, sep=";", index=False, encoding="utf-8-sig")
+
+def from_batch_ans_file_to_answers(batch_ans_file):
+    results_map = {}
+    with open(batch_ans_file, "r", encoding="utf-8") as f:
+        for line in f:
+            item = json.loads(line)
+            cid = item.get("custom_id")
+            content = _extract_content_from_item(item)
+            tupled = str(content)
+            results_map[int(cid)] = tupled
+    ordered = [results_map.get(i, ("N/A", "N/A", "N/A", "N/A", "N/A")) for i in range(len(results_map))]
+    return ordered
+
+def decomp_address(params, functions):
+
+    with open(params["mots_cles_file"], 'r', encoding='utf-8') as f:
         keywords = json.load(f)
 
-    INPUT_FILE = params.get("input_file", "")
-    N_LINES = params.get("n_lines", 0)
-    MODEL = params.get("model", "")
+    INPUT_FILE = params["input_file"]
+    N_LINES = params["n_lines_process"]
+    MODEL = params["mistral_model"]
 
-    PROMPT_FILE = params.get("prompt_file", "")
-    API_KEYS = params.get("api_keys", [])
-    LOG_FILE = params.get("log_file", "")
-    OUTPUT_FILE = params.get("output_file", "")
+    PROMPT_FILE = params["prompt_file"]
+    API_KEYS = params["api_key"]
+    LOG_FILE = params["statistics_log_file"]
+    OUTPUT_FILE = params["output_file"]
 
     if INPUT_FILE.endswith(".xlsx"):
         df = pd.read_excel(INPUT_FILE, engine='calamine')
     elif INPUT_FILE.endswith(".csv"):
-        df = pd.read_csv(INPUT_FILE, header=0, dtype=str, encoding='utf-8-sig',delimiter=';')
+        df = pd.read_csv(INPUT_FILE, header=0, dtype=str, encoding='utf-8-sig')
 
     if N_LINES >= 0:
         df = df.head(N_LINES)
 
-    if functions.get("log_statistics", False):
+    if functions["log_statistics"]:
         start_time = time.time()
-
-    if functions.get("build_prompts", False):
-        prompts = build_all_prompts(PROMPT_FILE, addresses=df['Adresse concat'], pays_liste=df['ADRESSPAY'], keywords=keywords)
     
-    if functions.get("use_model", False):
+    if functions["use_mistral"] or functions["save_prompts"]:
+        prompts = build_all_prompts(PROMPT_FILE, addresses=df[params["concat_column"]], pays_liste=df[params["pays_column"]], keywords=keywords)
+    
+    if functions["save_prompts"]:
+        lines_iter = list(_build_jsonl_lines(prompts, "/v1/chat/completions", {}))
+        write_temp_jsonl(lines_iter, params["save_prompts_file"])
+
+    if functions["use_mistral"]:
         answers = send_batch_prompts(prompts, API_KEYS, MODEL)
 
-    if functions.get("log_statistics", False):
+    if functions["parse_and_save_batch_ans_file"]:
+        answers = from_batch_ans_file_to_answers(params["batch_ans_file"])
+
+    if functions["log_statistics"]:
         end_time = time.time()
         elapsed_time = end_time - start_time
 
-    if functions.get("save_answers", False) or functions.get("log_statistics", False):
-        accuracy ,answers_corr= accuracy_calc(df, answers)
+    if functions["log_statistics"] :
+        accuracy= accuracy_calc(df, answers)
 
-    if functions.get("save_answers", False):
-        log_answers(answers, df['Adresse concat'], answers_corr,OUTPUT_FILE)
+    if functions["save_answers"] or functions["parse_and_save_batch_ans_file"]:
+        log_answers(answers, df['Adresse concat'],OUTPUT_FILE,params["columns"])
 
-    if functions.get("log_statistics", False):
+    if functions["log_statistics"]:
         with open(LOG_FILE, "a", encoding="utf-8") as f:
             f.write(f"Rows processed: {len(prompts)}, Model: {MODEL}")
             f.write(f", Time: {elapsed_time:.2f} seconds, Prompt: {PROMPT_FILE}\n")
@@ -161,4 +190,11 @@ def main():
             f.write("\n\n")
 
 if __name__ == "__main__":
-    main()
+    with open('config.json', 'r', encoding='utf-8') as f, open('schema.json', 'r', encoding='utf-8') as v:
+        config = json.load(f)
+        schema = json.load(v)
+        validate(instance=config, schema=schema)
+        params = config["ai_parameters"]
+        functions = config["functions"]
+
+    decomp_address(params, functions)
