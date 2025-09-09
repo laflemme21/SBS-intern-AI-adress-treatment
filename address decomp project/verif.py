@@ -19,7 +19,8 @@ def extract_columns_from_excel(file_path, columns):
         if file_path.endswith(".xlsx"):
             df = pd.read_excel(file_path, engine='calamine')
         elif file_path.endswith(".csv"):
-            df = pd.read_csv(file_path, header=0, dtype=str, encoding='utf-8-sig',delimiter=';')
+            df = pd.read_csv(file_path, header=0, dtype=str, encoding='utf-8-sig', delimiter=',')
+            df.columns = [col.strip() for col in df.columns]
         # Check if all specified columns exist
         for col in columns:
             if col not in df.columns:
@@ -290,11 +291,11 @@ def compare_word_sets_row(row, unique_col, list_cols, weight):
 
     return weight if match else 0
 
-def verification_main(verification_parameters):
+def grading_main(verification_parameters):
     with open(verification_parameters["mots_cles_file"], 'r', encoding='utf-8') as f:
         common_words = json.load(f)
 
-    columns=verification_parameters["columns"]
+    columns=[col.strip() for col in verification_parameters["columns"]]
     number_of_rows = verification_parameters["number_of_rows"]
     OUTPUT_FILE = verification_parameters["output_file"]
 
@@ -327,5 +328,5 @@ if __name__ == "__main__":
         config = json.load(f)
         schema = json.load(v)
         validate(instance=config, schema=schema)
-        verification_parameters = config.get("verification_parameters", {})
-    verification_main(verification_parameters)
+        verification_parameters = config.get("ans_grading_parameters", {})
+    grading_main(verification_parameters)

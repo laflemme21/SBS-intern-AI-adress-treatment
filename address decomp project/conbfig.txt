@@ -1,6 +1,5 @@
-{
-    "address_decomp_parameters": {
-        "api_key": "################################ ",
+{   
+    "use_mistral": {"api_key": "################################ ",
         "mistral_model": "ft:ministral-8b-latest:5d5f2efb:20250902:79156560",
         "mots_cles_file": "common_words.json",
         "input_file": "Adresses_test_correct.xlsx",
@@ -12,16 +11,25 @@
             "mention speciale / lieu dit"
         ],
         "concat_column": "Adresse concat",
-        "output_file": "ministral-400-answers.csv",
         "prompt_file": "prompt_7.j2",
-        "n_lines_process": 30,
-        "statistics_log_file": "batch_log.txt",
-        "save_prompts_file": "saved_prompts.jsonl",
+        "n_lines_process": 30
+    },
+    
+    "log_statistics": {
+        "statistics_log_file": "batch_log.txt"
+    },
+
+    "parse_and_save_batch_ans_file": {
+        "output_file": "ministral-400-answers.csv",
         "batch_ans_file": "5d4d8e99-6a1b-44be-92a6-3a3abd618c79.jsonl"
     },
-    "ans_grading_parameters": {
-        "input_file": "test.csv",
+
+    "save_answers": {"output_file": "ministral-400-answers.csv"},
+
+    "build_and_save_prompts": {
+        "prompt_file": "prompt_7.j2",
         "mots_cles_file": "common_words.json",
+        "input_file": "Adresses_test_correct.xlsx",
         "columns": [
             "Adresse concat",
             "Numero de voie et voie",
@@ -29,8 +37,23 @@
             "Appartement / etage",
             "mention speciale / lieu dit"
         ],
+        "concat_column": "Adresse concat",
+        "n_lines_process": 30,
+        "save_prompts_file": "saved_prompts.jsonl"
+    },
+
+    "calculate_conf_score": {
+        "input_file": "test.csv",
+        "mots_cles_file": "common_words.json",
+        "columns": [
+            "Adresse concat ",
+            "Numero de voie et voie",
+            "immeuble residence",
+            "Appartement / etage",
+            "mention speciale / lieu dit"
+        ],
         "number_of_rows": -1,
-        "output_file": "test_result.xlsx",
+        "output_file": "test_results.xlsx",
         "grading_weights": {
             "lengths": [
                 0.2,
@@ -47,22 +70,34 @@
         "min_length": 3,
         "max_length": 50
     },
-    "address_verif_parameters": {
-        "input_file": "Adresses_test_correct.xlsx",
+
+    "check_postal_code": {
+        "input_file": "test.csv",
         "postal_code_files": [
             "france_cop.txt"
+        ],"corresponding_pays": [
+            "FRANCE"
         ],
+        "pays_column": "ADRESSPAY",
+        "code_postal_column": "ADRESSCOP",
+        "output_file": "output.xlsx"
+    },
+
+    "check_ville": {
+        "input_file": "test.csv",
         "ville_files": [
             "france_villes.txt"
-        ],
-        "corresponding_pays": [
+        ],"corresponding_pays": [
             "FRANCE"
         ],
         "pays_column": "ADRESSPAY",
         "ville_column": "ADRESSVIL",
-        "code_postal_column": "ADRESSCOP",
         "output_file": "output.xlsx"
     },
+
+
+
+
     "functions": {
         "use_mistral": false,
         "log_statistics": false,
@@ -70,7 +105,7 @@
         "save_answers": false,
         "build_and_save_prompts": false,
         "calculate_conf_score": true,
-        "check_postal_code": true,
-        "check_ville": true
+        "check_postal_code": false,
+        "check_ville": false
     }
 }

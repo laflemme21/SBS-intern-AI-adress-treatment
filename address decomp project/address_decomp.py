@@ -2,16 +2,8 @@ import pandas as pd
 import time 
 from jinja2 import Template
 import json
-from batch_mistral_api import _download_output_lines, send_batch_prompts,write_temp_jsonl,_build_jsonl_lines,_extract_content_from_item
+from batch_mistral_api import send_batch_prompts,write_temp_jsonl,_build_jsonl_lines,_extract_content_from_item
 from jsonschema import validate, ValidationError
-
-def open_file(file_path,first_col,last_col,n_rows):
-    """
-    Opens an Excel file and returns the DataFrame.
-    """
-    df = pd.read_excel(file_path, engine='openpyxl')
-    return df.iloc[:n_rows, first_col:last_col]
-
 
 def build_prompt(address: str, pays: str, context: str, template: Template) -> str:
     """
@@ -158,10 +150,10 @@ def decomp_address(params, functions):
     if functions["log_statistics"]:
         start_time = time.time()
     
-    if functions["use_mistral"] or functions["save_prompts"]:
+    if functions["use_mistral"] or functions["build_and_save_prompts"]:
         prompts = build_all_prompts(PROMPT_FILE, addresses=df[params["concat_column"]], pays_liste=df[params["pays_column"]], keywords=keywords)
     
-    if functions["save_prompts"]:
+    if functions["build_and_save_prompts"]:
         lines_iter = list(_build_jsonl_lines(prompts, "/v1/chat/completions", {}))
         write_temp_jsonl(lines_iter, params["save_prompts_file"])
 
@@ -179,7 +171,7 @@ def decomp_address(params, functions):
         accuracy= accuracy_calc(df, answers)
 
     if functions["save_answers"] or functions["parse_and_save_batch_ans_file"]:
-        log_answers(answers, df['Adresse concat'],OUTPUT_FILE,params["columns"])
+        log_answers(answers, df[params["concat_column"]],OUTPUT_FILE,params["columns"])
 
     if functions["log_statistics"]:
         with open(LOG_FILE, "a", encoding="utf-8") as f:
@@ -194,7 +186,7 @@ if __name__ == "__main__":
         config = json.load(f)
         schema = json.load(v)
         validate(instance=config, schema=schema)
-        params = config["ai_parameters"]
+        params = config["address_decomp_parameters"]
         functions = config["functions"]
 
     decomp_address(params, functions)
