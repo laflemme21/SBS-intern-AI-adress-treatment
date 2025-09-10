@@ -1,0 +1,6 @@
+python313.zip
+./
+./DLLs
+./Lib
+./Lib/site-packages
+import site
