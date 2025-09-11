@@ -191,6 +191,11 @@ class ParametersWindow(tk.Toplevel):
             self.entry_widgets.append(entry)
             self.field_vars[tuple(path)] = (tk_var, node)
 
+            # Add tooltip with description from schema
+            description = node.get("description", "")
+            if description:
+                self._create_tooltip(entry, description)
+
             # Keep all inputs same size and enforce max input length
             tk_var.trace_add("write", lambda *_, v=tk_var, p=tuple(path): self._on_var_changed(v, p))
 
@@ -467,6 +472,41 @@ class ParametersWindow(tk.Toplevel):
             except Exception:
                 pass
         start_functions_window(self.config_obj)
+
+    def _create_tooltip(self, widget, text):
+        """Create a tooltip that shows on hover over a widget"""
+        tooltip = tk.Toplevel(self)
+        tooltip.withdraw()
+        tooltip.overrideredirect(True)
+        tooltip.attributes("-topmost", True)
+        
+        label = tk.Label(tooltip, text=text, justify='left', background="#FFFFE0", 
+                        relief="solid", borderwidth=1, wraplength=400, padx=4, pady=2)
+        label.pack()
+        
+        def show_tooltip(event):
+            x, y, _, _ = widget.bbox("insert")
+            x += widget.winfo_rootx() + 25
+            y += widget.winfo_rooty() + 25
+            tooltip.geometry(f"+{x}+{y}")
+            tooltip.deiconify()
+        
+        def hide_tooltip(event):
+            tooltip.withdraw()
+        
+        def update_position(event):
+            if tooltip.winfo_viewable():
+                x, y, _, _ = widget.bbox("insert")
+                x += widget.winfo_rootx() + 25
+                y += widget.winfo_rooty() + 25
+                tooltip.geometry(f"+{x}+{y}")
+        
+        widget.bind("<Enter>", show_tooltip)
+        widget.bind("<Leave>", hide_tooltip)
+        widget.bind("<Motion>", update_position)
+        
+        # Ensure tooltip is destroyed when the parameter window is destroyed
+        self.bind("<Destroy>", lambda e: tooltip.destroy())
 
 def show_selectable_error(title, error_text):
     # Show error in a selectable Text widget inside a dialog

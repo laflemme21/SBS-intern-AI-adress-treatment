@@ -4,36 +4,84 @@
     "address_decomp_parameters": {
       "type": "object",
       "properties": {
-        "api_key": { "type": "string", "x-group": ["use_mistral"] },
-        "mistral_model": { "type": "string", "x-group": ["use_mistral"] },
+        "api_key": { 
+          "type": "string", 
+          "x-group": ["use_mistral"],
+          "description": "Mistral API key for authentication" 
+        },
+        "mistral_model": { 
+          "type": "string", 
+          "x-group": ["use_mistral"],
+          "description": "Name of the Mistral model to use (e.g., 'mistral-medium-latest')" 
+        },
+        "mistral_batch_size": { 
+          "type": "integer", 
+          "x-group": ["use_mistral"],
+          "description": "Number of prompts to send in each batch request to Mistral API (if number of lines is large, reduce this value to avoid timeouts)" 
+        },
         "mots_cles_file": {
           "type": "string",
           "x-group": ["use_mistral", "build_and_save_prompts"],
-          "x-link": [["ans_grading_parameters", "mots_cles_file"]]
+          "x-link": [["ans_grading_parameters", "mots_cles_file"]],
+          "description": "Path to the file containing keywords to include in the prompt (will not change)"
         },
-        "input_file": { "type": "string", "x-group": ["use_mistral", "build_and_save_prompts","parse_and_save_batch_ans_file"] },
-        "pays_column": { "type": "string" },
+        "input_file": { 
+          "type": "string", 
+          "x-group": ["use_mistral", "build_and_save_prompts","parse_and_save_batch_ans_file"],
+          "description": "Path to the input Excel file containing addresses to process (will not change)" 
+        },
+        "pays_column": { 
+          "type": "string",
+          "description": "Name of the column containing country information in the input file to inject it in the prompt" 
+        },
         "output_columns": {
           "type": "array",
           "items": { "type": "string" },
           "x-group": ["use_mistral", "build_and_save_prompts","parse_and_save_batch_ans_file"],
-          "x-link": [["ans_grading_parameters", "input_columns"]]
+          "x-link": [["ans_grading_parameters", "input_columns"]],
+          "description": "List of column names to generate in the output file including the concatenated address column. concat,rue,immeuble,etage,mention in this order and format"
         },
-        "concat_column": { "type": "string", "x-group": ["use_mistral", "build_and_save_prompts","parse_and_save_batch_ans_file"] },
+        "concat_column": { 
+          "type": "string", 
+          "x-group": ["use_mistral", "build_and_save_prompts","parse_and_save_batch_ans_file"],
+          "description": "Name of the column containing the full address to decompose in the input file" 
+        },
         "output_file": {
           "type": "string",
           "x-group": ["parse_and_save_batch_ans_file", "save_answers"],
-          "x-link": [["ans_grading_parameters", "input_file"]]
+          "x-link": [["ans_grading_parameters", "input_file"]],
+          "description": "Path to save the output file with decomposed addresses (will replace existing file)"
         },
-        "prompt_file": { "type": "string", "x-group": ["use_mistral", "build_and_save_prompts"] },
-        "n_lines_process": { "type": "integer", "x-group": ["use_mistral", "build_and_save_prompts"] },
-        "statistics_log_file": { "type": "string", "x-group": ["log_statistics"] },
-        "save_prompts_file": { "type": "string", "x-group": ["build_and_save_prompts"] },
-        "batch_ans_file": { "type": "string", "x-group": ["parse_and_save_batch_ans_file"] }
+        "prompt_file": { 
+          "type": "string", 
+          "x-group": ["use_mistral", "build_and_save_prompts"],
+          "description": "Path to the file containing the prompt JinJa2 template (will not change)" 
+        },
+        "n_lines_process": { 
+          "type": "integer", 
+          "x-group": ["use_mistral", "build_and_save_prompts"],
+          "description": "Number of address lines to process from the input file (-1 to process all lines)" 
+        },
+        "statistics_log_file": { 
+          "type": "string", 
+          "x-group": ["log_statistics"],
+          "description": "Path of the statistics log file (will be created or added to)" 
+        },
+        "save_prompts_file": { 
+          "type": "string", 
+          "x-group": ["build_and_save_prompts"],
+          "description": "Path to save generated prompts for debugging or review (will replace existing file)" 
+        },
+        "batch_ans_file": { 
+          "type": "string", 
+          "x-group": ["parse_and_save_batch_ans_file"],
+          "description": "Path to input batch answer file to extract Mistral's answers (ill not change)" 
+        }
       },
       "required": [
         "api_key",
         "mistral_model",
+        "mistral_batch_size",
         "mots_cles_file",
         "input_file",
         "pays_column",
@@ -53,33 +101,61 @@
         "input_file": {
           "type": "string",
           "x-group": ["calculate_conf_score"],
-          "x-link": [["address_decomp_parameters", "output_file"]]
+          "x-link": [["address_decomp_parameters", "output_file"]],
+          "description": "Path to the input file containing decomposed addresses to evaluate and their corresponding original addresses (will not change)"
         },
         "mots_cles_file": {
           "type": "string",
           "x-group": ["calculate_conf_score"],
-          "x-link": [["address_decomp_parameters", "mots_cles_file"]]
+          "x-link": [["address_decomp_parameters", "mots_cles_file"]],
+          "description": "Path to the keywords file to check for keyword accurate placement (will not change)"
         },
         "input_columns": {
           "type": "array",
           "items": { "type": "string" },
           "x-group": ["calculate_conf_score"],
-          "x-link": [["address_decomp_parameters", "output_columns"]]
+          "x-link": [["address_decomp_parameters", "output_columns"]],
+          "description": "List of column names to evaluate in the input file in the order and format concat,rue,immeuble,etage,mention"
         },
-        "number_of_rows": { "type": "integer", "x-group": ["calculate_conf_score"] },
-        "output_file": { "type": "string", "x-group": ["calculate_conf_score"] },
+        "number_of_rows": { 
+          "type": "integer", 
+          "x-group": ["calculate_conf_score"],
+          "description": "Number of rows to process from the input file (-1 to process all rows)" 
+        },
+        "output_file": { 
+          "type": "string", 
+          "x-group": ["calculate_conf_score"],
+          "description": "Path to save the output file with confidence scores (will replace existing file)" 
+        },
         "grading_weights": {
           "type": "object",
           "properties": {
             "lengths": {
               "type": "array",
               "items": { "type": "number" },
-              "x-group": ["calculate_conf_score"]
+              "x-group": ["calculate_conf_score"],
+              "description": "List of weights for evaluating the length of each component in the order and format rue,immeuble,etage,mention"
             },
-            "keywords": { "type": "number", "x-group": ["calculate_conf_score"] },
-            "wrong_keywords": { "type": "number", "x-group": ["calculate_conf_score"] },
-            "rue_starts_number": { "type": "number", "x-group": ["calculate_conf_score"] },
-            "exact_word_match": { "type": "number", "x-group": ["calculate_conf_score"] }
+            "keywords": { 
+              "type": "number", 
+              "x-group": ["calculate_conf_score"],
+              "description": "Weight for columns containing at least 1 relevant keyword" 
+            },
+            "wrong_keywords": { 
+              "type": "number", 
+              "x-group": ["calculate_conf_score"],
+              "description": "Weight for columns containing no irrelevant keyword (if a column contains a keyword that shouldn't be there, it doesnt get this weight)" 
+            },
+            "rue_starts_number": { 
+              "type": "number", 
+              "x-group": ["calculate_conf_score"],
+              "description": "Weight for evaluating if street starts with a number" 
+            },
+            "exact_word_match": { 
+              "type": "number", 
+              "x-group": ["calculate_conf_score"],
+              "description": "Weight for exact word matches between the original and decomposed address components" 
+            }
           },
           "required": [
             "lengths",
@@ -89,8 +165,16 @@
             "exact_word_match"
           ]
         },
-        "min_length": { "type": "integer", "x-group": ["calculate_conf_score"] },
-        "max_length": { "type": "integer", "x-group": ["calculate_conf_score"] }
+        "min_length": { 
+          "type": "integer", 
+          "x-group": ["calculate_conf_score"],
+          "description": "Minimum acceptable length for address components (included)" 
+        },
+        "max_length": { 
+          "type": "integer", 
+          "x-group": ["calculate_conf_score"],
+          "description": "Maximum acceptable length for address components (included)" 
+        }
       },
       "required": [
         "input_file",
@@ -106,26 +190,49 @@
     "address_verif_parameters": {
       "type": "object",
       "properties": {
-        "input_file": { "type": "string", "x-group": ["check_postal_code", "check_ville"] },
+        "input_file": { 
+          "type": "string", 
+          "x-group": ["check_postal_code", "check_ville"],
+          "description": "Path to the input file containing addresses to verify (will not change)" 
+        },
         "postal_code_files": {
           "type": "array",
           "items": { "type": "string" },
-          "x-group": ["check_postal_code"]
+          "x-group": ["check_postal_code"],
+          "description": "List of files containing valid postal codes. indexing should correspond to the countries in 'corresponding_pays'. in this format: a,b,c"
         },
         "ville_files": {
           "type": "array",
           "items": { "type": "string" },
-          "x-group": ["check_ville"]
+          "x-group": ["check_ville"],
+          "description": "List of files containing valid city/town names. indexing should correspond to the countries in 'corresponding_pays'. in this format: a,b,c"
         },
         "corresponding_pays": {
           "type": "array",
           "items": { "type": "string" },
-          "x-group": ["check_postal_code", "check_ville"]
+          "x-group": ["check_postal_code", "check_ville"],
+          "description": "List of countries corresponding to the reference data files. the files that have the same index are for the same country which is specified here. in this format: a,b,c"
         },
-        "pays_column": { "type": "string", "x-group": ["check_postal_code", "check_ville"] },
-        "ville_column": { "type": "string", "x-group": ["check_ville"] },
-        "code_postal_column": { "type": "string", "x-group": ["check_postal_code"] },
-        "output_file": { "type": "string", "x-group": ["check_postal_code", "check_ville"] }
+        "pays_column": { 
+          "type": "string", 
+          "x-group": ["check_postal_code", "check_ville"],
+          "description": "Name of the column containing country information in the input file to determine which reference data to use" 
+        },
+        "ville_column": { 
+          "type": "string", 
+          "x-group": ["check_ville"],
+          "description": "Name of the column containing city/town information to verify in the input file" 
+        },
+        "code_postal_column": { 
+          "type": "string", 
+          "x-group": ["check_postal_code"],
+          "description": "Name of the column containing postal code information to verify in the input file" 
+        },
+        "output_file": { 
+          "type": "string", 
+          "x-group": ["check_postal_code", "check_ville"],
+          "description": "Path to save the output file with added columns indicating verification results (will replace existing file)" 
+        }
       },
       "required": [
         "input_file",
@@ -141,14 +248,46 @@
     "functions": {
       "type": "object",
       "properties": {
-        "use_mistral": { "type": "boolean", "x-group": ["functions"] },
-        "log_statistics": { "type": "boolean", "x-group": ["functions"] },
-        "parse_and_save_batch_ans_file": { "type": "boolean", "x-group": ["functions"] },
-        "save_answers": { "type": "boolean", "x-group": ["functions"] },
-        "build_and_save_prompts": { "type": "boolean", "x-group": ["functions"] },
-        "calculate_conf_score": { "type": "boolean", "x-group": ["functions"] },
-        "check_postal_code": { "type": "boolean", "x-group": ["functions"] },
-        "check_ville": { "type": "boolean", "x-group": ["functions"] }
+        "use_mistral": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable using Mistral AI API for address decomposition" 
+        },
+        "log_statistics": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable logging of processing statistics" 
+        },
+        "parse_and_save_batch_ans_file": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable parsing and saving batch answer files from Mistral" 
+        },
+        "save_answers": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable saving processed answers to output file" 
+        },
+        "build_and_save_prompts": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable building and saving prompts for Mistral" 
+        },
+        "calculate_conf_score": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable calculation of confidence scores for decomposed addresses" 
+        },
+        "check_postal_code": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable verification of postal codes against reference data" 
+        },
+        "check_ville": { 
+          "type": "boolean", 
+          "x-group": ["functions"],
+          "description": "Enable verification of city/town names against reference data" 
+        }
       },
       "required": [
         "use_mistral",

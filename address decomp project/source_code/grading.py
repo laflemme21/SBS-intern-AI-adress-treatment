@@ -235,9 +235,9 @@ def row_keyword_check(row, weight, list_of_columns, keywords_dict,add_if_find=Tr
         int: The grade for the row.
     """
     grade = 0
-    for column in list_of_columns:
+    for column,dict_key in zip(list_of_columns, keywords_dict.keys()):
         add=not add_if_find
-        keywords = keywords_dict[column]
+        keywords = keywords_dict[dict_key]
         if column not in row or not pd.notna(row[column]):
             # Always add the weight if cell is empty
             add=True

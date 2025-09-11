@@ -72,9 +72,9 @@ def is_answer_true(answer_str,true_comparaison:list):
             return False
     return True
 
-def accuracy_calc(df,answers):
+def accuracy_calc(df,columns,answers):
     correct_comparaisons = (
-        df[['Numero de voie et voie', 'immeuble residence', 'Appartement / etage', 'mention speciale / lieu dit']]
+        df[columns]
         .fillna("")
         .astype(str)
         .agg(';'.join, axis=1)
@@ -158,7 +158,7 @@ def decomp_address(params, functions):
         write_temp_jsonl(lines_iter, params["save_prompts_file"])
 
     if functions["use_mistral"]:
-        answers = send_batch_prompts(prompts, API_KEYS, MODEL)
+        answers = send_batch_prompts(prompts, API_KEYS, MODEL, batch_size=params["mistral_batch_size"])
 
     if functions["parse_and_save_batch_ans_file"]:
         answers = from_batch_ans_file_to_answers(params["batch_ans_file"])
@@ -168,7 +168,7 @@ def decomp_address(params, functions):
         elapsed_time = end_time - start_time
 
     if functions["log_statistics"] :
-        accuracy= accuracy_calc(df, answers)
+        accuracy= accuracy_calc(df, params["output_columns"][1:],answers)
 
     if functions["save_answers"] or functions["parse_and_save_batch_ans_file"]:
         log_answers(answers, df[params["concat_column"]],OUTPUT_FILE,params["output_columns"])

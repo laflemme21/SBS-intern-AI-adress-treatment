@@ -2,6 +2,7 @@
     "address_decomp_parameters": {
         "api_key": "################################ ",
         "mistral_model": "ft:ministral-8b-latest:5d5f2efb:20250902:79156560",
+        "mistral_batch_size": 1,
         "mots_cles_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/ressources/common_words.json",
         "input_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/in_out_files/Adresses_test_correct.xlsx",
         "pays_column": "ADRESSPAY",
@@ -21,7 +22,7 @@
         "batch_ans_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/documentation/5d4d8e99-6a1b-44be-92a6-3a3abd618c79.jsonl"
     },
     "ans_grading_parameters": {
-        "input_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/in_out_files/test.csv",
+        "input_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/in_out_files/ministral-400-answers.csv",
         "mots_cles_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/ressources/common_words.json",
         "input_columns": [
             "Adresse concat",
@@ -31,13 +32,13 @@
             "mention speciale / lieu dit"
         ],
         "number_of_rows": -1,
-        "output_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/in_out_files/test_result.xlsx",
+        "output_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/in_out_files/output.xlsx",
         "grading_weights": {
             "lengths": [
                 0.2,
                 0.1,
                 0.1,
-                0.1
+                0.2
             ],
             "keywords": 0.5,
             "wrong_keywords": 0.5,
@@ -64,10 +65,10 @@
         "output_file": "output.xlsx"
     },
     "functions": {
-        "use_mistral": false,
-        "log_statistics": false,
+        "use_mistral": true,
+        "log_statistics": true,
         "parse_and_save_batch_ans_file": false,
-        "save_answers": false,
+        "save_answers": true,
         "build_and_save_prompts": false,
         "calculate_conf_score": true,
         "check_postal_code": false,
