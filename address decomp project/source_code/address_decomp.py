@@ -166,9 +166,12 @@ def decomp_address(params, functions):
     if functions["log_statistics"]:
         end_time = time.time()
         elapsed_time = end_time - start_time
-
-    if functions["log_statistics"] :
-        accuracy= accuracy_calc(df, params["output_columns"][1:],answers)
+    try:
+        if functions["log_statistics"] :
+            accuracy= accuracy_calc(df, params["output_columns"][1:],answers)
+    except Exception as e:
+        print(f"Error calculating accuracy: {e}")
+        accuracy=None
 
     if functions["save_answers"] or functions["parse_and_save_batch_ans_file"]:
         log_answers(answers, df[params["concat_column"]],OUTPUT_FILE,params["output_columns"])
