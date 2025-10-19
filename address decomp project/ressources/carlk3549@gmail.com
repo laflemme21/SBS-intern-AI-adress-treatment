@@ -1,6 +1,6 @@
 {
     "address_decomp_parameters": {
-        "api_key": "################################ ",
+        "api_key": "################################",
         "mistral_model": "ft:ministral-8b-latest:5d5f2efb:20250902:79156560",
         "mistral_batch_size": 1000,
         "mots_cles_file": "C:/Users/kkassis/Documents/GitHub/SBS-intern-AI-adress-treatment/address decomp project/ressources/common_words.json",
