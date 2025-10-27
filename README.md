@@ -1,4 +1,5 @@
-Of course, here is the translation of the README file into English, with the original formatting preserved.
+This readme applies to the `address decomp project` zip file, the `experimenting` folder contains previous versions of the program 
+
 
 # SBS-intern-AI-address-treatment
 
